@@ -22,8 +22,7 @@ public class ToggleTrigger {
             prevState = true;
         }
         else{
-            if(prevState)
-                prevState = false;
+            prevState = false;
         }
     }
 }
