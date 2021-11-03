@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.helperfunctions.PID;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BasicPID {
-    public double desiredState, currentState; // setState, currentState
+    public double desiredState, currentState, lastState; // setState, currentState, stateMemory
     public double kP, kI, kD; // PID coefficients
     public double kS; // static coefficient
     public double integral; // current integral
@@ -18,6 +18,7 @@ public class BasicPID {
         this.kS = kS;
         this.time = time;
         integral = 0;
+        lastState = 100000;
         firstGetOutputLoop = true;
         firstSetStateLoop = true;
     }
@@ -36,7 +37,6 @@ public class BasicPID {
         double deltaError = error - prevError;
         prevTime = currentTime;
         prevError = error;
-        integral += error * deltaTime;
 
         double derivative = 0;
         if(deltaTime != 0) {
@@ -44,8 +44,10 @@ public class BasicPID {
         }
         this.currentState = currentState;
         double power = kP * error + kI * integral + kD * derivative;
-        if(shouldIntegralBeZeroed(error))
+        if(shouldIntegralBeZeroed(error, desiredState))
             clearIntegral();
+        if (incrementIntegral(power))
+            integral += error * deltaTime;
         if (power != 0)
             return power + (Math.signum(power) * kS);
         return power;
@@ -57,8 +59,13 @@ public class BasicPID {
     }
 
     // to be overridden in child classes (anti-windup method)
-    public boolean shouldIntegralBeZeroed(double error){
+    public boolean shouldIntegralBeZeroed(double error, double desiredState){
         return false;
+    }
+
+    // to be overridden in child classes (anti-windup method)
+    public boolean incrementIntegral(double power){
+        return true;
     }
 
     // clears integral to avoid windup
