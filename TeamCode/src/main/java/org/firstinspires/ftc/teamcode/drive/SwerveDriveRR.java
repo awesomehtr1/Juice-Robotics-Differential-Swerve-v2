@@ -70,7 +70,9 @@ public class SwerveDriveRR extends SwerveDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotorEx rotLeftFront, rotLeftRear, rotRightRear, rotRightFront;
     private List<DcMotorEx> motors;
+    private List<DcMotorEx> rotMotors;
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
@@ -104,7 +106,13 @@ public class SwerveDriveRR extends SwerveDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
+        rotLeftFront = hardwareMap.get(DcMotorEx.class, "rotLeftFront");
+        rotLeftRear = hardwareMap.get(DcMotorEx.class, "rotLeftRear");
+        rotRightRear = hardwareMap.get(DcMotorEx.class, "rotRightRear");
+        rotRightFront = hardwareMap.get(DcMotorEx.class, "rotRightFront");
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        rotMotors = Arrays.asList(rotLeftFront, rotLeftRear, rotRightRear, rotRightFront);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -316,11 +324,16 @@ public class SwerveDriveRR extends SwerveDrive {
     @NotNull
     @Override
     public List<Double> getModuleOrientations() {
+        // TODO: return lamprey radian values of each module
         return null;
     }
 
     @Override
     public void setModuleOrientations(double v, double v1, double v2, double v3) {
-
+        // TODO: implement pid to change radians to power using lamprey encoder
+        rotLeftFront.setPower(0);
+        rotLeftRear.setPower(0);
+        rotRightRear.setPower(0);
+        rotRightFront.setPower(0);
     }
 }

@@ -11,7 +11,7 @@ public class Teleop extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
         // teleop managers
-    
+
 
         waitForStart();
         while(opModeIsActive()){
