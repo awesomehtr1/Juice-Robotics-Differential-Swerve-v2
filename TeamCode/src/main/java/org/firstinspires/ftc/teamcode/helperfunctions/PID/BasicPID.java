@@ -56,7 +56,7 @@ public class BasicPID {
         this.desiredState = desiredState;
     }
 
-    // to be overridden in child classes
+    // to be overridden in child classes (anti-windup method)
     public boolean shouldIntegralBeZeroed(double error, double power){
         return false;
     }

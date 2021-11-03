@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 
@@ -14,7 +15,7 @@ public class Robot {
     public HardwareMap hardwareMap; // stores hardware map
 
     // robot subsystems
-
+    public Drive drive;
 
     public Gamepad gamepad1, gamepad2; // gamepads
 
@@ -22,11 +23,13 @@ public class Robot {
         hardwareMap = hardwareMap; // init passed-in hardwaremap
 
         // init subsystems
+        drive = new Drive(this);
 
         Subsystems = new ArrayList<>();
         TeleOpManagers = new ArrayList<>();
 
         // add subsystems to list
+        Subsystems.add(drive);
 
         // init gamepads
         this.gamepad1 = gamepad1;

@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.drive.SwerveDriveRR;
 
 public class Drive implements Subsystem {
     Robot robot;
-    SwerveDriveRR drive;
+    public SwerveDriveRR drive;
 
     public Drive(Robot robot){
         this.robot = robot;

@@ -17,6 +17,8 @@ public class Lamprey {
 
     public double getAngle() {
         return MathFunctions.angleWrap(angle);
+        // return MathFunctions.angleWrap180(angle)
+        // TODO: figure out if 180 or 360 range should be passed in
     }
 
     public void update() {

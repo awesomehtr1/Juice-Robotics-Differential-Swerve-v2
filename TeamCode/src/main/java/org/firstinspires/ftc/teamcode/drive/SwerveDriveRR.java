@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.Lamprey;
+import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -363,10 +364,10 @@ public class SwerveDriveRR extends SwerveDrive {
     @Override
     public void setModuleOrientations(double v, double v1, double v2, double v3) {
         // set target pos for PIDs of each module
-        LFPID.setState(v);
-        LRPID.setState(v1);
-        RRPID.setState(v2);
-        RFPID.setState(v3);
+        LFPID.setState(MathFunctions.angleWrap(v));
+        LRPID.setState(MathFunctions.angleWrap(v1));
+        RRPID.setState(MathFunctions.angleWrap(v2));
+        RFPID.setState(MathFunctions.angleWrap(v3));
 
         // update PID and set motor power
         rotLeftFront.setPower(LFPID.updatePID(getModuleOrientations().get(0)));
