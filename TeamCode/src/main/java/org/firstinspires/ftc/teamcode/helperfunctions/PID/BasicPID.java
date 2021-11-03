@@ -44,7 +44,7 @@ public class BasicPID {
         }
         this.currentState = currentState;
         double power = kP * error + kI * integral + kD * derivative;
-        if(shouldIntegralBeZeroed(error, power))
+        if(shouldIntegralBeZeroed(error))
             clearIntegral();
         if (power != 0)
             return power + (Math.signum(power) * kS);
@@ -57,7 +57,7 @@ public class BasicPID {
     }
 
     // to be overridden in child classes (anti-windup method)
-    public boolean shouldIntegralBeZeroed(double error, double power){
+    public boolean shouldIntegralBeZeroed(double error){
         return false;
     }
 
