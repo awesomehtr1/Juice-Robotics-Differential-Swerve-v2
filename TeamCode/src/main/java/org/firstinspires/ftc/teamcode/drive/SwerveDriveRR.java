@@ -19,13 +19,19 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Hardware;
 
+import org.firstinspires.ftc.teamcode.helperfunctions.Lamprey;
+import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -74,8 +80,23 @@ public class SwerveDriveRR extends SwerveDrive {
     private List<DcMotorEx> motors;
     private List<DcMotorEx> rotMotors;
 
+
+
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
+
+    // rotation pid coefficients
+    // TODO: Tune rotation PID vals
+    public final double kP = 0;
+    public final double kI = 0;
+    public final double kD = 0;
+    public final double kS = 0;
+
+    ElapsedTime time = new ElapsedTime();
+    public SwerveRotationPID LFPID, LRPID, RRPID, RFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+
+    public Lamprey LFLamprey, LRLamprey, RRLamprey, RFLamprey; // lamprey objects
+    public List<Lamprey> lampreys;
 
     public SwerveDriveRR(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH);
@@ -111,8 +132,15 @@ public class SwerveDriveRR extends SwerveDrive {
         rotRightRear = hardwareMap.get(DcMotorEx.class, "rotRightRear");
         rotRightFront = hardwareMap.get(DcMotorEx.class, "rotRightFront");
 
+        // TODO: update with lamprey device names
+        LFLamprey = new Lamprey(hardwareMap, null);
+        LRLamprey = new Lamprey(hardwareMap, null);
+        RRLamprey = new Lamprey(hardwareMap, null);
+        RFLamprey = new Lamprey(hardwareMap, null);
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         rotMotors = Arrays.asList(rotLeftFront, rotLeftRear, rotRightRear, rotRightFront);
+        lampreys = Arrays.asList(LFLamprey, LRLamprey, RRLamprey, RFLamprey);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -324,16 +352,26 @@ public class SwerveDriveRR extends SwerveDrive {
     @NotNull
     @Override
     public List<Double> getModuleOrientations() {
-        // TODO: return lamprey radian values of each module
-        return null;
+        List<Double> orientations = null;
+        for (Lamprey module : lampreys){
+            module.update(); // updates angle measurement
+            orientations.add(module.getAngle()); // adds the normalized angle to the list
+        }
+        return orientations;
     }
 
     @Override
     public void setModuleOrientations(double v, double v1, double v2, double v3) {
-        // TODO: implement pid to change radians to power using lamprey encoder
-        rotLeftFront.setPower(0);
-        rotLeftRear.setPower(0);
-        rotRightRear.setPower(0);
-        rotRightFront.setPower(0);
+        // set target pos for PIDs of each module
+        LFPID.setState(v);
+        LRPID.setState(v1);
+        RRPID.setState(v2);
+        RFPID.setState(v3);
+
+        // update PID and set motor power
+        rotLeftFront.setPower(LFPID.updatePID(getModuleOrientations().get(0)));
+        rotLeftRear.setPower(LRPID.updatePID(getModuleOrientations().get(1)));
+        rotRightRear.setPower(RRPID.updatePID(getModuleOrientations().get(2)));
+        rotRightFront.setPower(RFPID.updatePID(getModuleOrientations().get(3)));
     }
 }
