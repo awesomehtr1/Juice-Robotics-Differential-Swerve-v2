@@ -15,6 +15,7 @@ public class Teleop extends LinearOpMode {
 
 
         waitForStart();
+        if(isStopRequested()) return;
         while(opModeIsActive()){
             robot.drive.drive.setWeightedDrivePower(new Pose2d(
                             gamepad1.left_stick_y,

@@ -10,10 +10,12 @@ public class SampleTestOpMode extends LinearOpMode {
     public void runOpMode(){
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
+
         // teleop managers
 
 
         waitForStart();
+        if(isStopRequested()) return;
         while(opModeIsActive()){
             robot.update();
         }
