@@ -2,19 +2,24 @@ package org.firstinspires.ftc.teamcode.teleopmanager;
 
 import android.app.job.JobInfo;
 
+import org.firstinspires.ftc.teamcode.teleop.Teleop;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class TeleOpManager {
     public BooleanSupplier trigger; // gamepad boolean input
-    public DoubleSupplier pos; // gamepad double input
     public RobotAction action, action2; // passed in robot actions
+    public ArrayList<RobotAction> actions; // passed in robot action list
 
     public boolean prevState, state = false; // booleans for toggle/trigger
+
     public enum MODE {
         TRIGGER,
         TOGGLE,
-        DOUBLE
+        LISTTRIGGER
     };
     public MODE mode;
 
@@ -33,11 +38,11 @@ public class TeleOpManager {
         mode = MODE.TOGGLE;
     }
 
-    // double constructor (1 double, 1 action)
-    public TeleOpManager(DoubleSupplier pos, RobotAction action){
-        this.pos = pos;
-        this.action = action;
-        mode = MODE.DOUBLE;
+    // list constructor (1 boolean trigger, list of actions)
+    public TeleOpManager(BooleanSupplier trigger, ArrayList<RobotAction> robotActions) {
+        this.trigger = trigger;
+        actions = robotActions;
+        mode = MODE.LISTTRIGGER;
     }
 
     // updates state and calls run()
@@ -49,7 +54,7 @@ public class TeleOpManager {
         }
 
         // toggle mode
-        else if (mode == MODE.TOGGLE){
+        else if (mode == MODE.TOGGLE) {
             if (trigger.getAsBoolean()) {
                 if (!prevState)
                     state = !state;
@@ -64,8 +69,13 @@ public class TeleOpManager {
             else
                 action2.run();
         }
-        else if (mode == MODE.DOUBLE){
-            action.run();
+
+        // list mode
+        else if (mode == MODE.LISTTRIGGER) {
+            if (trigger.getAsBoolean()) {
+                for (RobotAction action : actions)
+                    action.run();
+            }
         }
     }
 }

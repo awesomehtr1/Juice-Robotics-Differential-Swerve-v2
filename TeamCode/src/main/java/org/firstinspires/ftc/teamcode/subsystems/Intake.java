@@ -7,42 +7,45 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 public class Intake implements Subsystem{
     Robot robot;
-    CRServo servo1, servo2;
+    CRServo servoR1, servoR2, servoL1, servoL2;
 
     // stores current state of intake
-    enum STATE {
+    enum State {
         OFF,
         ON,
     }
-    Intake.STATE state;
+    Intake.State state;
 
     public Intake(Robot robot){
         this.robot = robot;
-        servo1 = robot.hardwareMap.get(CRServo.class, ""); // TODO: update device name
-        servo2 = robot.hardwareMap.get(CRServo.class, "");
-        state = STATE.OFF;
+        servoR1 = robot.hardwareMap.get(CRServo.class, ""); // TODO: update device name
+        servoR2 = robot.hardwareMap.get(CRServo.class, "");
+        servoL1 = robot.hardwareMap.get(CRServo.class, "");
+        servoL2 = robot.hardwareMap.get(CRServo.class, "");
+        state = State.OFF;
     }
 
     @Override
     public void update() {
-        if(state == STATE.OFF)
+        if(state == State.OFF)
             setPower(0);
-        if(state == STATE.ON)
+        if(state == State.ON)
             setPower(1);
     }
 
     // use these methods to set the state of the intake
     public void off(){
-        state = STATE.OFF;
+        state = State.OFF;
     }
-
     public void on(){
-        state = STATE.ON;
+        state = State.ON;
     }
 
     public void setPower(double power){
         // TODO: change power direction if needed
-        servo1.setPower(power);
-        servo2.setPower(power);
+        servoL1.setPower(power);
+        servoL2.setPower(-power);
+        servoR1.setPower(-power);
+        servoR2.setPower(power);
     }
 }
