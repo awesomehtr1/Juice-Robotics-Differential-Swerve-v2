@@ -28,8 +28,10 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.Lamprey;
+import org.firstinspires.ftc.teamcode.helperfunctions.LowPassFilter;
 import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
+import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -39,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -96,8 +99,19 @@ public class SwerveDriveRR extends SwerveDrive {
     public Lamprey LFLamprey, LRLamprey, RRLamprey, RFLamprey; // lamprey objects
     public List<Lamprey> lampreys;
 
-    public SwerveDriveRR(HardwareMap hardwareMap) {
+    public boolean SanfordGyro;
+    public SanfordGyro sanfordGyro;
+
+    public final double hubA = 0.0; // TODO: tune a
+    public final double sanfordA = 0.0;
+    public LowPassFilter hubLowPassFilter = new LowPassFilter(hubA);
+    public LowPassFilter sanfordLowPassFilter = new LowPassFilter(sanfordA);
+
+    public SwerveDriveRR(HardwareMap hardwareMap, boolean SanfordGyro) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH);
+
+        this.SanfordGyro = SanfordGyro;
+        sanfordGyro = new SanfordGyro(hardwareMap);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -227,6 +241,12 @@ public class SwerveDriveRR extends SwerveDrive {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
+
+        // update low pass filters
+        if (SanfordGyro)
+            sanfordLowPassFilter.update(getExternalHeading());
+        else
+            hubLowPassFilter.update(getExternalHeading());
     }
 
     public void waitForIdle() {
@@ -310,7 +330,7 @@ public class SwerveDriveRR extends SwerveDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return SanfordGyro ? sanfordLowPassFilter.returnValue() : hubLowPassFilter.returnValue();
     }
 
     @Override
