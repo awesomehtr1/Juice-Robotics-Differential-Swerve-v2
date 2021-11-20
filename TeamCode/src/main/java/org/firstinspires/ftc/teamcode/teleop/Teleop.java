@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.teleopmanager.RobotAction;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
+import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,47 +16,54 @@ import java.util.List;
 @TeleOp(name = "Teleop", group = "Teleop")
 public class Teleop extends LinearOpMode {
     public void runOpMode(){
-        Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
+        Robot robot = new Robot(hardwareMap); // creates new robot
 
         // teleop managers
         // DRIVER 1
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.right_trigger > 0.05,
-                ()-> robot.intake.on(),
-                ()-> robot.intake.off())); // intake toggle
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.dpad_up,
-                new ArrayList<RobotAction>(Arrays.asList(
-                        ()-> robot.lift.high(),
-                        ()-> robot.arm.deposit())))); // lift to high and arm to deposit
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.dpad_left,
-                new ArrayList<RobotAction>(Arrays.asList(
-                        ()-> robot.lift.mid(),
-                        ()-> robot.arm.deposit())))); // lift to mid  and arm to deposit
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.dpad_right,
-                new ArrayList<RobotAction>(Arrays.asList(
-                        ()-> robot.lift.low(),
-                        ()-> robot.arm.deposit())))); // lift to low and arm to deposit
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.dpad_down,
-                new ArrayList<RobotAction>(Arrays.asList(
-                        ()-> robot.lift.rest(),
-                        ()-> robot.arm.intake(),
-                        ()-> robot.claw.intake())))); // lift to rest and arm/claw to intake
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.x,
-                ()-> robot.claw.release())); // release cargo
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad1.a,
-                ()-> robot.claw.grip())); // grip cargo
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeToggle(()-> gamepad1.right_trigger > 0.05)
+                .addAction(()-> robot.intake.on())
+                .addAction(()-> robot.intake.off())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.dpad_up)
+                .addAction(()-> robot.claw.grip())
+                .addAction(()-> robot.lift.high())
+                .addAction(()-> robot.arm.deposit())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.dpad_left)
+                .addAction(()-> robot.claw.grip())
+                .addAction(()-> robot.lift.mid())
+                .addAction(()-> robot.arm.deposit())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.dpad_right)
+                .addAction(()-> robot.claw.grip())
+                .addAction(()-> robot.lift.low())
+                .addAction(()-> robot.arm.deposit())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.dpad_down)
+                .addAction(()-> robot.lift.rest())
+                .addAction(()-> robot.arm.intake())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.x)
+                .addAction(()-> robot.claw.release())
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeTrigger(()-> gamepad1.a)
+                .addAction(()-> robot.claw.grip())
+                .build());
 
         // DRIVER 2
-        robot.createTeleOpManager(new TeleOpManager(
-                ()-> robot.gamepad2.x,
-                ()-> robot.spinner.on(),
-                ()-> robot.spinner.off())); // duck spinner toggle
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeToggle(()-> gamepad2.x)
+                .addAction(()-> robot.spinner.on())
+                .addAction(()-> robot.spinner.off())
+                .build()
+        );
 
         // reset robot
         robot.lift.rest();

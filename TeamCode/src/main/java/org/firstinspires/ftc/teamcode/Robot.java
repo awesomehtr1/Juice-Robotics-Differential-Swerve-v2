@@ -29,9 +29,7 @@ public class Robot {
     public Claw claw;
     public Spinner spinner;
 
-    public Gamepad gamepad1, gamepad2; // gamepads
-
-    public Robot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+    public Robot(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap; // init passed-in hardwaremap
 
         // bulk read
@@ -58,10 +56,6 @@ public class Robot {
         Subsystems.add(arm);
         Subsystems.add(claw);
         Subsystems.add(spinner);
-
-        // init gamepads
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
     }
 
     // updates robot

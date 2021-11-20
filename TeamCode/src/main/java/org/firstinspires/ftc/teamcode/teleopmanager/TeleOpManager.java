@@ -17,18 +17,10 @@ public class TeleOpManager {
     public boolean prevState, state = false; // booleans for toggle/trigger
 
     public enum MODE {
-        TRIGGER,
         TOGGLE,
-        LISTTRIGGER
-    };
-    public MODE mode;
-
-    // basic constructor (1 boolean trigger, 1 action)
-    public TeleOpManager(BooleanSupplier trigger, RobotAction action) {
-        this.trigger = trigger;
-        this.action = action;
-        mode = MODE.TRIGGER;
+        TRIGGER
     }
+    public MODE mode;
 
     // toggle constructor (1 boolean toggle, 2 actions)
     public TeleOpManager(BooleanSupplier trigger, RobotAction action, RobotAction action2) {
@@ -42,15 +34,17 @@ public class TeleOpManager {
     public TeleOpManager(BooleanSupplier trigger, ArrayList<RobotAction> robotActions) {
         this.trigger = trigger;
         actions = robotActions;
-        mode = MODE.LISTTRIGGER;
+        mode = MODE.TRIGGER;
     }
 
     // updates state and calls run()
     public void update() {
         // trigger mode
         if (mode == MODE.TRIGGER) {
-            if (trigger.getAsBoolean())
-                action.run();
+            if (trigger.getAsBoolean()) {
+                for (RobotAction action : actions)
+                    action.run();
+            }
         }
 
         // toggle mode
@@ -68,14 +62,6 @@ public class TeleOpManager {
                 action.run();
             else
                 action2.run();
-        }
-
-        // list mode
-        else if (mode == MODE.LISTTRIGGER) {
-            if (trigger.getAsBoolean()) {
-                for (RobotAction action : actions)
-                    action.run();
-            }
         }
     }
 }
