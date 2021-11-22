@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 @TeleOp(name = "SampleTestOpMode", group = "TestOpModes")
 public class SampleTestOpMode extends LinearOpMode {
     public void runOpMode(){
-        Robot robot = new Robot(hardwareMap); // creates new robot
+        Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
 
         // teleop managers

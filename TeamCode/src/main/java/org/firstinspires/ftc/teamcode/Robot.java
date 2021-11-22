@@ -29,8 +29,14 @@ public class Robot {
     public Claw claw;
     public Spinner spinner;
 
-    public Robot(HardwareMap hardwareMap) {
+    // gamepads
+    public Gamepad gamepad1, gamepad2;
+
+    public Robot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         this.hardwareMap = hardwareMap; // init passed-in hardwaremap
+
+        this.gamepad1 = gamepad1; // init passed-in gamepads
+        this.gamepad2 = gamepad2;
 
         // bulk read
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);

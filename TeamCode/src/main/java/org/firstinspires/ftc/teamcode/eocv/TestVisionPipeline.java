@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.eocv;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
@@ -9,7 +9,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class VisionPipeline extends OpenCvPipeline {
+public class TestVisionPipeline extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
 
@@ -33,28 +33,27 @@ public class VisionPipeline extends OpenCvPipeline {
     }
     private POS pos;
 
-    public VisionPipeline(Telemetry t) {
+    public TestVisionPipeline(Telemetry t) {
         telemetry = t;
     }
 
     public Mat processFrame(Mat input) {
-        // convert RBB to HSV
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(23, 50, 70); // duck lower
-        Scalar highHSV = new Scalar(32, 255, 255); // duck upper
+        Scalar lowHSV = new Scalar(23, 50, 70);
+        Scalar highHSV = new Scalar(32, 255, 255);
 
         Scalar lowHSVGreen = new Scalar(35, 50, 70); // green test lower
         Scalar highHSVGreen = new Scalar(70, 255, 255); // green test upper
 
-        // convert to b/w by removing all colors not in range
-        Core.inRange(mat, lowHSV, highHSV, mat);
+        Scalar lowHSVPurple = new Scalar(110, 50, 70); // purple test lower
+        Scalar highHSVPurple = new Scalar(145, 255, 255); // purple test upper
 
-        // create 3 submats for left/right/center
+        Core.inRange(mat, lowHSVPurple, highHSVPurple, mat);
+
         Mat left = mat.submat(LEFTBOX);
         Mat center = mat.submat(CENTERBOX);
         Mat right = mat.submat(RIGHTBOX);
 
-        // get val for each submat by dividing average hue by area of box
         double leftValue = Core.sumElems(left).val[0] / LEFTBOX.area() / 255;
         double centerValue = Core.sumElems(center).val[0] / CENTERBOX.area() / 255;
         double rightValue = Core.sumElems(right).val[0] / RIGHTBOX.area() / 255;
@@ -63,7 +62,6 @@ public class VisionPipeline extends OpenCvPipeline {
         center.release();
         right.release();
 
-        // max = max value (highest amount of green/yellow)
         double maxLeftRight = Math.max(leftValue, rightValue);
         double max = Math.max(maxLeftRight, centerValue);
 
@@ -77,12 +75,10 @@ public class VisionPipeline extends OpenCvPipeline {
         telemetry.addData("Vision target location: ", pos);
         telemetry.update();
 
-        // b/w to RGB
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
         Scalar colorTarget = new Scalar(0, 255, 0);
         Scalar colorEmpty = new Scalar(255, 0, 0);
 
-        // draw green rect on target box/red on empty box
         Imgproc.rectangle(mat, LEFTBOX, pos == POS.LEFT ? colorTarget:colorEmpty);
         Imgproc.rectangle(mat, CENTERBOX, pos == POS.CENTER ? colorTarget:colorEmpty);
         Imgproc.rectangle(mat, RIGHTBOX, pos == POS.RIGHT ? colorTarget:colorEmpty);

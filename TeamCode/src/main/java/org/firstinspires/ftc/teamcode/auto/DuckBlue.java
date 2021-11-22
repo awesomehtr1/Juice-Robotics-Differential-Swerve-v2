@@ -9,12 +9,9 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.teleop.Teleop;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous
 public class DuckBlue extends LinearOpMode {
@@ -36,28 +33,17 @@ public class DuckBlue extends LinearOpMode {
     }
     public State state;
     OpenCvCamera camera;
+    Vision vision;
 
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap);
+        robot = new Robot(hardwareMap, null, null);
         state = State.STARTED;
         robot.drive.drive.setPoseEstimate(startPose);
 
         // opening camera + starting vision pipeline
-        int cameraMonitorViewId = hardwareMap.appContext.
-                getResources().getIdentifier("cameraMonitorViewId",
-                "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().
-                createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
-        VisionPipeline detector = new VisionPipeline(telemetry);
-        camera.setPipeline(detector);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            public void onOpened()
-            {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
-            public void onError(int errorCode) { }
-        });
+        vision = new Vision(hardwareMap, telemetry);
+        vision.setPipeline();
+        vision.startStreaming();
 
         // low path
         TrajectorySequence low = robot.drive.drive.trajectorySequenceBuilder(startPose)
@@ -72,14 +58,17 @@ public class DuckBlue extends LinearOpMode {
                 .build();
 
         waitForStart();
-        VisionPipeline.POS position = detector.getPosition();
+        VisionPipeline.POS position = vision.detector.getPosition();
         switch(position) {
             case LEFT:
                 robot.drive.drive.followTrajectorySequenceAsync(low);
+                break;
             case CENTER:
                 robot.drive.drive.followTrajectorySequenceAsync(mid);
+                break;
             case RIGHT:
                 robot.drive.drive.followTrajectorySequenceAsync(high);
+                break;
         }
 
         while (opModeIsActive()) {
@@ -98,6 +87,8 @@ public class DuckBlue extends LinearOpMode {
                     break;
                 case LIFTREST:
                     robot.lift.rest();
+                    robot.claw.intake();
+                    robot.arm.intake();
                     break;
                 case DEPOSIT:
                     robot.claw.release();
