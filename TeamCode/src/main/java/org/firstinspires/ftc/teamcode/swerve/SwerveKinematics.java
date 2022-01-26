@@ -1,11 +1,20 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 public class SwerveKinematics {
+    // trackwidth: horizontal distance between center of pairs of wheels
+    // wheelbase: vertical distance between center of pairs of wheels
     private double trackwidth, wheelbase;
 
+    // 2 dimensional array storing the angle and speed of all modules
+    // follows LF, RF, RB, LB order
+    // same order as quadrants in a cartesian graph
     private double[][] wheelAngleSpeed = new double[4][2]; // angle, speed format
 
+    // calculates angle and speed for all swerve modules provided a translation vector
+    // broken up into x (strafePower) and y (forward) power components
+    // and a rotation vector
     public void calculateKinematics(double rotationPower, double strafePower, double forwardPower) {
+        // math functions used to calculate angle and speed
         double vectorMath1 = strafePower - (rotationPower * wheelbase);
         double vectorMath2 = strafePower + (rotationPower * wheelbase);
         double vectorMath3 = forwardPower - (rotationPower * trackwidth);
@@ -23,9 +32,11 @@ public class SwerveKinematics {
         wheelAngleSpeed[3][0] = Math.atan2(vectorMath1, vectorMath3); //LB angle
         wheelAngleSpeed[3][1] = Math.sqrt(Math.pow(vectorMath1, 2) + Math.pow(vectorMath3, 2)); //LB speed
 
+        // normalizes powers if the requested power is above 1 or below -1
         normalizePowers();
     }
 
+    // parses wheelAngleSpeed 2D array and returns 1D array of just angles
     public double[] getWheelAngles() {
         double[] wheelAngles = new double[4];
         for (int i = 0; i < 4; i++)
@@ -33,6 +44,7 @@ public class SwerveKinematics {
         return wheelAngles;
     }
 
+    // parses wheelAngleSpeed 2D array and returns 1D array of drive powers
     public double[] getWheelVelocities() {
         double[] wheelVelocities = new double[4];
         for (int i = 0; i < 4; i++)
@@ -40,11 +52,12 @@ public class SwerveKinematics {
         return wheelVelocities;
     }
 
+    // function to normalize drive powers if the requested power is above 1 or below -1
     public void normalizePowers() {
         double max = 0;
         for(int i = 0; i < 4; i++) {
-            if(wheelAngleSpeed[i][1] > max)
-                max = wheelAngleSpeed[i][1];
+            if(Math.abs(wheelAngleSpeed[i][1]) > max)
+                max = Math.abs(wheelAngleSpeed[i][1]);
         }
         if(max > 1.0) {
             for(int i = 0; i < 4; i++) {
@@ -53,6 +66,7 @@ public class SwerveKinematics {
         }
     }
 
+    // functions to set wheelbase and trackwidth measurements
     public void setWheelbase(double wheelbase) { this.wheelbase = wheelbase; }
     public void setTrackwidth(double trackwidth) { this.trackwidth = trackwidth; }
 }

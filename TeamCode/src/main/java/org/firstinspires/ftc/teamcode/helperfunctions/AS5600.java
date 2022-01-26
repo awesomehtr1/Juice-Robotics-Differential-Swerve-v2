@@ -16,24 +16,28 @@ public class AS5600 {
         angleOut = hardwareMap.get(AnalogInput.class, deviceName);
     }
 
-    // returns angle in pi to -pi format
+    // updates returns angle in pi to -pi format
     public double getAngle() {
         update();
         return MathFunctions.angleWrap(angle);
     }
 
+    // gets output voltage, adjusts the voltage range, and linearizes the angle
     public void update() {
         angle = angleOut.getVoltage() - correction;
         angle -= minVoltage;
         angle /= (maxVoltage - minVoltage);
         angle *= (Math.PI * 2);
+        applyLinearity(angle);
     }
 
+    // applies function linearize the output
     public double applyLinearity(double angle) {
         //TODO: linearity equation
         return angle;
     }
 
+    // returns raw output voltage
     public double getVoltage() {
         return angleOut.getVoltage();
     }
