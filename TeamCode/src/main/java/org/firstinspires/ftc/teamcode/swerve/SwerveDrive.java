@@ -5,11 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
-
-import java.util.Dictionary;
-import java.util.HashMap;
 
 public class SwerveDrive {
     SwerveKinematics swerveKinematics;
@@ -30,8 +26,7 @@ public class SwerveDrive {
     SwerveRotationPID LFPID, RFPID, RBPID, LBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
 
     SwerveModule LF, RF, RB, LB;
-
-    public HashMap<String, SwerveModule> moduleHashMap = new HashMap<>();
+    SwerveModule[] swerveModules = new SwerveModule[4];
 
     private final double ticksPerRot = 28 * 60 / 30 * 84 / 14; // 28 ticks per rot motor -> 60:30 -> 84:14
     private final double ticksPerRad = ticksPerRot / (Math.PI * 2);
@@ -57,19 +52,38 @@ public class SwerveDrive {
         RF = new SwerveModule(RFrot, RFdrive, RFPID);
         RB = new SwerveModule(RBrot, RBdrive, RBPID);
         LB = new SwerveModule(LBrot, LBdrive, LBPID);
+
+        swerveModules[0] = LF;
+        swerveModules[1] = RF;
+        swerveModules[2] = RB;
+        swerveModules[3] = LB;
     }
 
     public void setMotorPowers(double rotation, double strafe, double forward) {
         swerveKinematics.calculateKinematics(rotation, strafe, forward);
+        double[] rotAngleArray = swerveKinematics.getWheelAngles();
+        double[] drivePowerArray = swerveKinematics.getWheelVelocities();
+        setRotPowerArray(rotAngleArray);
+        setDrivePowerArray(drivePowerArray);
     }
 
     public void setRotationPower(SwerveModule module, double angle) {
-        module.pid.setState(angle);
-        double power = module.pid.updatePID(module.rot.getCurrentPosition());
-        module.rot.setPower(power);
+        module.setAngle(angle);
+        double power = module.updatePID(module.getAngle());
+        module.setRot(power);
     }
 
     public void setDrivePower(SwerveModule module, double power) {
-        
+        module.setDrive(power);
+    }
+
+    public void setRotPowerArray(double[] rotAngleArray) {
+        for (int i = 0; i < 4; i++)
+            setRotationPower(swerveModules[i], rotAngleArray[i]);
+    }
+
+    public void setDrivePowerArray(double[] drivePowerArray) {
+        for (int i = 0; i < 4; i++)
+            setDrivePower(swerveModules[i], drivePowerArray[i]);
     }
 }
