@@ -18,7 +18,7 @@ public class SwerveModule {
 
     public void setAngle(double angle) { pid.setState(angle); }
 
-    public double getAngle() { return rot.getCurrentPosition(); }
+    public double getAngle() { return rot.getCurrentPosition() / SwerveConstants.ticksPerRad; }
 
     public double updatePID(double pos) { return pid.updatePID(pos); }
 

@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
 public class SwerveDrive {
     SwerveKinematics swerveKinematics;
-    private final double wheelbase = 0.0; //get from cad
-    private final double trackwidth = 0.0; //get from cad
 
     HardwareMap hardwareMap;
 
@@ -28,13 +26,10 @@ public class SwerveDrive {
     SwerveModule LF, RF, RB, LB;
     SwerveModule[] swerveModules = new SwerveModule[4];
 
-    private final double ticksPerRot = 28 * 60 / 30 * 84 / 14; // 28 ticks per rot motor -> 60:30 -> 84:14
-    private final double ticksPerRad = ticksPerRot / (Math.PI * 2);
-
     public SwerveDrive(HardwareMap hardwareMap) {
         swerveKinematics = new SwerveKinematics();
-        swerveKinematics.setTrackwidth(trackwidth);
-        swerveKinematics.setWheelbase(wheelbase);
+        swerveKinematics.setTrackwidth(SwerveConstants.trackwidth);
+        swerveKinematics.setWheelbase(SwerveConstants.wheelbase);
 
         this.hardwareMap = hardwareMap;
 
