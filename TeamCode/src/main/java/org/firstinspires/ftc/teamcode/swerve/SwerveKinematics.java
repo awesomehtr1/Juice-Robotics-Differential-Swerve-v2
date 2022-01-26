@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 public class SwerveKinematics {
-    private static double trackwidth, wheelbase;
+    private double trackwidth, wheelbase;
 
-    double[][] wheelAngleSpeed = new double[4][2]; // angle, speed format
+    private double[][] wheelAngleSpeed = new double[4][2]; // angle, speed format
 
     public void calculateKinematics(double rotationPower, double strafePower, double forwardPower) {
         double vectorMath1 = strafePower - (rotationPower * wheelbase);

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
 public class SwerveDrive {
@@ -13,7 +14,7 @@ public class SwerveDrive {
     HardwareMap hardwareMap;
 
     DcMotor LFdrive, RFdrive, RBdrive, LBdrive;
-    DcMotorEx LFrot, RFrot, RBrot, LBrot;
+    DcMotor LFrot, RFrot, RBrot, LBrot;
 
     ElapsedTime time = new ElapsedTime();
     // TODO: PID
@@ -22,6 +23,8 @@ public class SwerveDrive {
     public final double kD = 0.0;
     public final double kS = 0.0;
     SwerveRotationPID LFPID, RFPID, RBPID, LBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+
+    AS5600 LFas5600, RFas5600, RBas5600, LBas5600;
 
     SwerveModule LF, RF, RB, LB;
     SwerveModule[] swerveModules = new SwerveModule[4];
@@ -38,15 +41,20 @@ public class SwerveDrive {
         RBdrive = hardwareMap.get(DcMotor.class, "RB");
         LBdrive = hardwareMap.get(DcMotor.class, "LB");
 
-        LFrot = hardwareMap.get(DcMotorEx.class, "LFrot");
-        RFrot = hardwareMap.get(DcMotorEx.class, "RFrot");
-        RBrot = hardwareMap.get(DcMotorEx.class, "RBrot");
-        LBrot = hardwareMap.get(DcMotorEx.class, "LBrot");
+        LFrot = hardwareMap.get(DcMotor.class, "LFrot");
+        RFrot = hardwareMap.get(DcMotor.class, "RFrot");
+        RBrot = hardwareMap.get(DcMotor.class, "RBrot");
+        LBrot = hardwareMap.get(DcMotor.class, "LBrot");
 
-        LF = new SwerveModule(LFrot, LFdrive, LFPID);
-        RF = new SwerveModule(RFrot, RFdrive, RFPID);
-        RB = new SwerveModule(RBrot, RBdrive, RBPID);
-        LB = new SwerveModule(LBrot, LBdrive, LBPID);
+        LFas5600 = new AS5600(hardwareMap, "LFas5600");
+        RFas5600 = new AS5600(hardwareMap, "RFas5600");
+        RBas5600 = new AS5600(hardwareMap, "RBas5600");
+        LBas5600 = new AS5600(hardwareMap, "LBas5600");
+
+        LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
+        RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
+        RB = new SwerveModule(RBrot, RBdrive, RBPID, RBas5600);
+        LB = new SwerveModule(LBrot, LBdrive, LBPID, LBas5600);
 
         swerveModules[0] = LF;
         swerveModules[1] = RF;
@@ -63,6 +71,12 @@ public class SwerveDrive {
     }
 
     public void setRotationPower(SwerveModule module, double angle) {
+        if(Math.abs(angle - module.getAngle()) > Math.PI/2) {
+            angle = 180 + angle;
+            module.setReverseDrive(true);
+        }
+        else
+            module.setReverseDrive(false);
         module.setAngle(angle);
         double power = module.updatePID(module.getAngle());
         module.setRot(power);
