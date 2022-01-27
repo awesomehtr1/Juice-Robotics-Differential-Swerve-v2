@@ -21,7 +21,7 @@ public class Drive implements Subsystem {
     public void slowModeOn() {drivePower = 0.3;}
     public void slowModeOff() {drivePower = 1.0;}
 
-    public void turnTeleopDriveOn() {teleopDriveOn = true;}
+    public void teleopDriveOn() {teleopDriveOn = true;}
 
     @Override
     public void update() {

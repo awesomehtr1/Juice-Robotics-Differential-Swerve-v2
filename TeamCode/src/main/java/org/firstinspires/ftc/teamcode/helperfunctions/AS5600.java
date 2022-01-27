@@ -7,13 +7,14 @@ public class AS5600 {
     HardwareMap hardwareMap;
     AnalogInput angleOut; // analog output
     private double angle; // stores current angle
-    private final double correction = 0.0; // voltage that corresponds to 0 rad
-    private final double maxVoltage = 5.0;
-    private final double minVoltage = 0.0;
+    private double correction; // voltage that corresponds to 0 rad
+    private final double maxVoltage = 3.286;
+    private final double minVoltage = 0.001;
 
-    public AS5600(HardwareMap hardwareMap, String deviceName) {
+    public AS5600(HardwareMap hardwareMap, String deviceName, double correction) {
         this.hardwareMap = hardwareMap;
         angleOut = hardwareMap.get(AnalogInput.class, deviceName);
+        this.correction = correction;
     }
 
     // updates returns angle in pi to -pi format

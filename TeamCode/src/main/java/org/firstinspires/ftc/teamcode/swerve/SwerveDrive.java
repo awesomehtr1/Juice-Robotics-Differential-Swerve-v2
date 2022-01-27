@@ -62,10 +62,10 @@ public class SwerveDrive {
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LFas5600 = new AS5600(hardwareMap, "LFas5600");
-        RFas5600 = new AS5600(hardwareMap, "RFas5600");
-        RBas5600 = new AS5600(hardwareMap, "RBas5600");
-        LBas5600 = new AS5600(hardwareMap, "LBas5600");
+        LFas5600 = new AS5600(hardwareMap, "LFas5600", 0.0);
+        RFas5600 = new AS5600(hardwareMap, "RFas5600", 0.0);
+        RBas5600 = new AS5600(hardwareMap, "RBas5600", 0.0);
+        LBas5600 = new AS5600(hardwareMap, "LBas5600", 0.0);
 
         LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);

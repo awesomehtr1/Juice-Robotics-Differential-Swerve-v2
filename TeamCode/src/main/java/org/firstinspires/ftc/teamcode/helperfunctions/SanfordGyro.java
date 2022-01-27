@@ -27,7 +27,7 @@ public class SanfordGyro {
             firstUpdateLoop = false;
         }
         double currentAngle = getAngleRaw();
-        cumulativeAngle += MathFunctions.angleWrap180(currentAngle-prevAngle) * corectionCoeff;
+        cumulativeAngle += MathFunctions.angleWrap(currentAngle-prevAngle) * corectionCoeff;
         prevAngle = currentAngle;
     }
 
