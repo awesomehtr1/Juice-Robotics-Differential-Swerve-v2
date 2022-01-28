@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -16,8 +14,8 @@ public class SwerveDrive {
 
     HardwareMap hardwareMap;
 
-    DcMotor LFdrive, RFdrive, RBdrive, LBdrive;
-    DcMotor LFrot, RFrot, RBrot, LBrot;
+    DcMotor RFdrive, LFdrive, LBdrive, RBdrive;
+    DcMotor RFrot, LFrot, LBrot, RBrot;
 
     ElapsedTime time = new ElapsedTime();
     // TODO: PID Constants
@@ -25,12 +23,12 @@ public class SwerveDrive {
     public final double kI = 0.0;
     public final double kD = 0.0;
     public final double kS = 0.0;
-    SwerveRotationPID LFPID, RFPID, RBPID, LBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+    SwerveRotationPID RFPID, LFPID, LBPID, RBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
 
-    AS5600 LFas5600, RFas5600, RBas5600, LBas5600;
+    AS5600 RFas5600, LFas5600, LBas5600, RBas5600;
 
     // array of swerve module objects
-    SwerveModule LF, RF, RB, LB;
+    SwerveModule RF, LF, LB, RB;
     SwerveModule[] swerveModules = new SwerveModule[4];
 
     public SwerveDrive(HardwareMap hardwareMap) {
@@ -40,10 +38,10 @@ public class SwerveDrive {
 
         this.hardwareMap = hardwareMap;
 
-        LFdrive = hardwareMap.get(DcMotor.class, "LF");
         RFdrive = hardwareMap.get(DcMotor.class, "RF");
-        RBdrive = hardwareMap.get(DcMotor.class, "RB");
+        LFdrive = hardwareMap.get(DcMotor.class, "LF");
         LBdrive = hardwareMap.get(DcMotor.class, "LB");
+        RBdrive = hardwareMap.get(DcMotor.class, "RB");
 
         //TODO: reverse drive motors if needed
 //        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -51,10 +49,10 @@ public class SwerveDrive {
 //        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 //        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LFrot = hardwareMap.get(DcMotor.class, "LFrot");
         RFrot = hardwareMap.get(DcMotor.class, "RFrot");
-        RBrot = hardwareMap.get(DcMotor.class, "RBrot");
+        LFrot = hardwareMap.get(DcMotor.class, "LFrot");
         LBrot = hardwareMap.get(DcMotor.class, "LBrot");
+        RBrot = hardwareMap.get(DcMotor.class, "RBrot");
 
         //TODO: reverse rot motors if needed
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -62,21 +60,21 @@ public class SwerveDrive {
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LFas5600 = new AS5600(hardwareMap, "LFas5600", 0.0);
-        RFas5600 = new AS5600(hardwareMap, "RFas5600", 0.0);
-        RBas5600 = new AS5600(hardwareMap, "RBas5600", 0.0);
-        LBas5600 = new AS5600(hardwareMap, "LBas5600", 0.0);
+        RFas5600 = new AS5600(hardwareMap, "RFas5600", 2.523);
+        LFas5600 = new AS5600(hardwareMap, "LFas5600", 0.133);
+        LBas5600 = new AS5600(hardwareMap, "LBas5600", 3.258);
+        RBas5600 = new AS5600(hardwareMap, "RBas5600", 2.940);
 
-        LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
-        RB = new SwerveModule(RBrot, RBdrive, RBPID, RBas5600);
+        LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
         LB = new SwerveModule(LBrot, LBdrive, LBPID, LBas5600);
+        RB = new SwerveModule(RBrot, RBdrive, RBPID, RBas5600);
 
         // add swerve modules to array
-        swerveModules[0] = LF;
-        swerveModules[1] = RF;
-        swerveModules[2] = RB;
-        swerveModules[3] = LB;
+        swerveModules[0] = RF;
+        swerveModules[1] = LF;
+        swerveModules[2] = LB;
+        swerveModules[3] = RB;
     }
 
     // sets rotation and drive powers using inputs from gamepad

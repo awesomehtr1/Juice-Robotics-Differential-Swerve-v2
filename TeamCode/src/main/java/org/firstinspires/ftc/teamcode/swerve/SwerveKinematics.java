@@ -6,7 +6,7 @@ public class SwerveKinematics {
     private double trackwidth, wheelbase;
 
     // 2 dimensional array storing the angle and speed of all modules
-    // follows LF, RF, RB, LB order
+    // follows RF, LF, LB, RB order
     // same order as quadrants in a cartesian graph
     private double[][] wheelAngleSpeed = new double[4][2]; // angle, speed format
 
@@ -20,17 +20,17 @@ public class SwerveKinematics {
         double vectorMath3 = forwardPower - (rotationPower * trackwidth);
         double vectorMath4 = forwardPower + (rotationPower * trackwidth);
 
-        wheelAngleSpeed[0][0] = Math.atan2(vectorMath2, vectorMath3); //LF angle
-        wheelAngleSpeed[0][1] = Math.sqrt(Math.pow(vectorMath2, 2) + Math.pow(vectorMath3, 2)); //LF speed
+        wheelAngleSpeed[0][0] = Math.atan2(vectorMath2, vectorMath3); //RF angle
+        wheelAngleSpeed[0][1] = Math.sqrt(Math.pow(vectorMath2, 2) + Math.pow(vectorMath3, 2)); //RF speed
 
-        wheelAngleSpeed[1][0] = Math.atan2(vectorMath2, vectorMath4); //RF angle
-        wheelAngleSpeed[1][1] = Math.sqrt(Math.pow(vectorMath2, 2) + Math.pow(vectorMath4, 2)); //RF speed
+        wheelAngleSpeed[1][0] = Math.atan2(vectorMath2, vectorMath4); //LF angle
+        wheelAngleSpeed[1][1] = Math.sqrt(Math.pow(vectorMath2, 2) + Math.pow(vectorMath4, 2)); //LF speed
 
-        wheelAngleSpeed[2][0] = Math.atan2(vectorMath1, vectorMath4); //RB angle
-        wheelAngleSpeed[2][1] = Math.sqrt(Math.pow(vectorMath1, 2) + Math.pow(vectorMath4, 2)); //RB speed
+        wheelAngleSpeed[2][0] = Math.atan2(vectorMath1, vectorMath4); //LB angle
+        wheelAngleSpeed[2][1] = Math.sqrt(Math.pow(vectorMath1, 2) + Math.pow(vectorMath4, 2)); //LB speed
 
-        wheelAngleSpeed[3][0] = Math.atan2(vectorMath1, vectorMath3); //LB angle
-        wheelAngleSpeed[3][1] = Math.sqrt(Math.pow(vectorMath1, 2) + Math.pow(vectorMath3, 2)); //LB speed
+        wheelAngleSpeed[3][0] = Math.atan2(vectorMath1, vectorMath3); //RB angle
+        wheelAngleSpeed[3][1] = Math.sqrt(Math.pow(vectorMath1, 2) + Math.pow(vectorMath3, 2)); //RB speed
 
         // normalizes powers if the requested power is above 1 or below -1
         normalizePowers();
