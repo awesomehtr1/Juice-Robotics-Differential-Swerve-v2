@@ -34,7 +34,25 @@ public class AS5600 {
 
     // applies function linearize the output
     public double applyLinearity(double angle) {
-        //TODO: linearity equation
+//        angle = MathFunctions.angleWrap(angle);
+//        if(-Math.PI <= angle && angle <= -1.092)
+//            angle = (angle + 0.04) / 0.99;
+//        else if(-1.092 < angle && angle <= -0.291)
+//            angle = angle / 1.04;
+//        else if(-0.291 < angle && angle <= 0.816)
+//            angle = angle / 1.02;
+//        else if(0.816 < angle && angle <= 1.465)
+//            angle = angle / 1.01;
+//        else if(1.465 < angle && angle <= 1.475)
+//            angle = (angle - 1.32) / 0.1;
+//        else if(1.465 < angle && angle <= Math.PI)
+//            angle = (angle + 0.1) / 1.021;
+//        if(-Math.PI <= angle && angle <= -1.1)
+//            angle = (angle + 0.03) / 1.005;
+//        else if(-1.1 < angle && angle <= 0)
+//            angle = angle / 1.05;
+//        else if(0 < angle && angle < Math.PI)
+//            angle = angle / 0.98;
         return angle;
     }
 

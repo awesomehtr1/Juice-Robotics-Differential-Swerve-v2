@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
@@ -11,7 +10,7 @@ public class SwerveModule {
     private DcMotor drive;
     private SwerveRotationPID pid;
     private AS5600 as5600;
-    private boolean reverseDrive;
+    private boolean reverseDrive = false;
 
     private double rotPower;
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -10,26 +11,26 @@ import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 // high level swerve drive class which utilizes gamepad controls to control the swerve modules
 // wraps SwerveKinematics controls and implements SwerveModule
 public class SwerveDrive {
-    SwerveKinematics swerveKinematics;
+    private SwerveKinematics swerveKinematics;
 
-    HardwareMap hardwareMap;
+    private HardwareMap hardwareMap;
 
-    DcMotor RFdrive, LFdrive, LBdrive, RBdrive;
-    DcMotor RFrot, LFrot, LBrot, RBrot;
+    private DcMotor RFdrive, LFdrive, LBdrive, RBdrive;
+    private DcMotor RFrot, LFrot, LBrot, RBrot;
 
     ElapsedTime time = new ElapsedTime();
     // TODO: PID Constants
-    public final double kP = 0.0;
+    public final double kP = 0.8;
     public final double kI = 0.0;
     public final double kD = 0.0;
     public final double kS = 0.0;
-    SwerveRotationPID RFPID, LFPID, LBPID, RBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+    private SwerveRotationPID RFPID, LFPID, LBPID, RBPID;
 
-    AS5600 RFas5600, LFas5600, LBas5600, RBas5600;
+    private AS5600 RFas5600, LFas5600, LBas5600, RBas5600;
 
     // array of swerve module objects
-    SwerveModule RF, LF, LB, RB;
-    SwerveModule[] swerveModules = new SwerveModule[4];
+    private SwerveModule RF, LF, LB, RB;
+    public SwerveModule[] swerveModules = new SwerveModule[4];
 
     public SwerveDrive(HardwareMap hardwareMap) {
         swerveKinematics = new SwerveKinematics();
@@ -55,15 +56,20 @@ public class SwerveDrive {
         RBrot = hardwareMap.get(DcMotor.class, "RBrot");
 
         //TODO: reverse rot motors if needed
+//        RFrot.setDirection(DcMotorSimple.Direction.REVERSE);
 //        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
+//        LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
+        RBrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RFas5600 = new AS5600(hardwareMap, "RFas5600", 2.523);
-        LFas5600 = new AS5600(hardwareMap, "LFas5600", 0.133);
-        LBas5600 = new AS5600(hardwareMap, "LBas5600", 3.258);
-        RBas5600 = new AS5600(hardwareMap, "RBas5600", 2.940);
+        RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.523);
+        LFas5600 = new AS5600(hardwareMap, "LFanalog", 0.133);
+        LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.258);
+        RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.940);
+
+        RFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+        LFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+        LBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+        RBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
 
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
         LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
