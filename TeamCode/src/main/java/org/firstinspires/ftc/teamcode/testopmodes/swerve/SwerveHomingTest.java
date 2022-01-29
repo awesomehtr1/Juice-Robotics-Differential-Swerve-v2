@@ -17,12 +17,7 @@ import org.firstinspires.ftc.teamcode.swerve.SwerveModule;
 @TeleOp(name = "Swerve Homing Test", group = "TestOpModes")
 public class SwerveHomingTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
-        DcMotor RFrot = hardwareMap.get(DcMotor.class, "RFrot");
-        AS5600 RF = new AS5600(hardwareMap, "RFanalog", 2.523);
-        ElapsedTime time = new ElapsedTime();
         SwerveDrive swerveDrive = new SwerveDrive(hardwareMap);
-        TelemetryPacket packet = new TelemetryPacket();
-        FtcDashboard dashboard = FtcDashboard.getInstance();
         waitForStart();
         while(opModeIsActive()){
             for(SwerveModule swerveModule : swerveDrive.swerveModules) {

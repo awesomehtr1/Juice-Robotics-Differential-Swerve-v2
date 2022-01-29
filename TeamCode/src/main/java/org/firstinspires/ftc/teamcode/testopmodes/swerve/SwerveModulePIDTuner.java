@@ -1,14 +1,18 @@
 package org.firstinspires.ftc.teamcode.testopmodes.swerve;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
+import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
+import org.firstinspires.ftc.teamcode.swerve.SwerveModule;
 
 @Config
 @TeleOp(name = "Swerve Module PID Tuner", group = "TestOpModes")
@@ -17,13 +21,13 @@ public class SwerveModulePIDTuner extends LinearOpMode {
     ElapsedTime time = new ElapsedTime();
 
     public void runOpMode(){
-        SwerveRotationPID pid = new SwerveRotationPID(kP, kI, kD, kS, time);
-        DcMotor rotationMotor = hardwareMap.get(DcMotor.class, "");
-        AS5600 AS5600 = new AS5600(hardwareMap, null, 0.0); // TODO: change device name
+        SwerveDrive drive = new SwerveDrive(hardwareMap);
 
         TelemetryPacket packet = new TelemetryPacket();
+        FtcDashboard dashboard = FtcDashboard.getInstance();
 
         boolean rotate = false;
+        double setState = 0;
         ElapsedTime time = new ElapsedTime();
 
         waitForStart();
@@ -36,22 +40,34 @@ public class SwerveModulePIDTuner extends LinearOpMode {
             if(gamepad1.b)
                 rotate = false;
 
-            double angle = AS5600.getAngle();
-            if(rotate) {
-                if(time.seconds() > 1.0) {
-                    pid.setState(Math.PI);
+            for(SwerveModule module : drive.swerveModules) {
+                double angle = module.getAngle();
+                module.pid.kP = kP;
+                module.pid.kI = kI;
+                module.pid.kD = kD;
+                module.pid.kS = kS;
+                if (rotate) {
+                    if (time.seconds() < 0.75) {
+                        setState = Math.PI / 2;
+                        module.setAngle(Math.PI / 2);
+                    }
+                    else if (time.seconds() >= 0.75 && time.seconds() < 1.5) {
+                        setState = 0;
+                        module.setAngle(0);
+                    }
+                    else if (time.seconds() >= 1.5)
+                        time.reset();
+                    module.setRot(module.updatePID(angle));
                 }
-                if(time.seconds() > 1.5)
-                    time.reset();
-                else {
-                    pid.setState(0);
-                }
-                    rotationMotor.setPower(pid.updatePID(angle));
             }
 
-            packet.put("Set State", pid.desiredState);
-            packet.put("Current State", angle);
-            telemetry.update();
+
+            packet.put("Set State", setState);
+            packet.put("RF", drive.swerveModules[0].getAngle());
+            packet.put("LF", drive.swerveModules[1].getAngle());
+            packet.put("LB", drive.swerveModules[2].getAngle());
+            packet.put("RB", drive.swerveModules[3].getAngle());
+            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

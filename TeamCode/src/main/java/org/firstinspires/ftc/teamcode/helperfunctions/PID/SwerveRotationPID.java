@@ -9,17 +9,6 @@ public class SwerveRotationPID extends BasicPID {
 
     @Override
     public boolean shouldIntegralBeZeroed(double error, double desiredState) {
-        if (desiredState != lastState) {
-            lastState = desiredState;
-            return true;
-        }
-        lastState = desiredState;
-        return false;
-    }
-
-    @Override
-    public boolean incrementIntegral(double power) {
-        // prevents integral incrementation if power >= 1 or integral sum > 0.3
-        return !(Math.abs(power) >= 1 || Math.abs(integral) > 0.3);
+        return Math.signum(error) != Math.signum(prevError);
     }
 }

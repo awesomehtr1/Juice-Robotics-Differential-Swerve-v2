@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
@@ -15,15 +16,12 @@ public class MeepMeepTesting {
         // Creates field with 700 pixels and 60 fps
         MeepMeep meepMeep = new MeepMeep(700, 60);
 
-        Pose2d START_POSE = new Pose2d(-36, 63.5, Math.toRadians(-90));
-
         RoadRunnerBotEntity bot = new DefaultBotBuilder(meepMeep)
-                .setConstraints(30, 60, Math.toRadians(180), Math.toRadians(180), 13)
+                .setConstraints(65, 50, Math.toRadians(180), Math.toRadians(180), 9)
                 .setColorScheme(new ColorSchemeBlueDark())
                 .setDimensions(12.5, 12.5)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(START_POSE)
-                                .forward(10)
+                        drive.trajectorySequenceBuilder(null)
                                 .build()
                 );
 

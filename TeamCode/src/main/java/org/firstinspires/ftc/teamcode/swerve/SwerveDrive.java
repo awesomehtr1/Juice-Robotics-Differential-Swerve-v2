@@ -11,20 +11,23 @@ import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 // high level swerve drive class which utilizes gamepad controls to control the swerve modules
 // wraps SwerveKinematics controls and implements SwerveModule
 public class SwerveDrive {
-    private SwerveKinematics swerveKinematics;
+    public SwerveKinematics swerveKinematics;
 
     private HardwareMap hardwareMap;
 
     private DcMotor RFdrive, LFdrive, LBdrive, RBdrive;
     private DcMotor RFrot, LFrot, LBrot, RBrot;
 
-    ElapsedTime time = new ElapsedTime();
-    // TODO: PID Constants
+    // pid constants
     public final double kP = 0.8;
-    public final double kI = 0.0;
-    public final double kD = 0.0;
-    public final double kS = 0.0;
-    private SwerveRotationPID RFPID, LFPID, LBPID, RBPID;
+    public final double kI = 0.08;
+    public final double kD = 0.011;
+    public final double kS = 0.08;
+    ElapsedTime RFtime = new ElapsedTime();
+    ElapsedTime LFtime = new ElapsedTime();
+    ElapsedTime LBtime = new ElapsedTime();
+    ElapsedTime RBtime = new ElapsedTime();
+    public SwerveRotationPID RFPID, LFPID, LBPID, RBPID;
 
     private AS5600 RFas5600, LFas5600, LBas5600, RBas5600;
 
@@ -45,10 +48,10 @@ public class SwerveDrive {
         RBdrive = hardwareMap.get(DcMotor.class, "RB");
 
         //TODO: reverse drive motors if needed
+//        RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 //        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        RBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         RFrot = hardwareMap.get(DcMotor.class, "RFrot");
         LFrot = hardwareMap.get(DcMotor.class, "LFrot");
@@ -66,10 +69,10 @@ public class SwerveDrive {
         LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.258);
         RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.940);
 
-        RFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
-        LFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
-        LBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
-        RBPID = new SwerveRotationPID(kP, kI, kD, kS, time);
+        RFPID = new SwerveRotationPID(kP, kI, kD, kS, RFtime);
+        LFPID = new SwerveRotationPID(kP, kI, kD, kS, LFtime);
+        LBPID = new SwerveRotationPID(kP, kI, kD, kS, LBtime);
+        RBPID = new SwerveRotationPID(kP, kI, kD, kS, RBtime);
 
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
         LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
@@ -94,12 +97,7 @@ public class SwerveDrive {
 
     // method for setting pid target for individual swerve module with angle optimization
     public void setRotationPower(SwerveModule module, double angle) {
-        if(Math.abs(angle - module.getAngle()) > Math.PI/2) {
-            angle = 180 + angle;
-            module.setReverseDrive(true);
-        }
-        else
-            module.setReverseDrive(false);
+//        angle = angleOptimization(module, angle);
         module.setAngle(angle);
         double power = module.updatePID(module.getAngle());
         module.setRot(power);
@@ -108,6 +106,18 @@ public class SwerveDrive {
     public void setDrivePower(SwerveModule module, double power) {
         module.setDrive(power);
 //        TODO: module.setDrive(power - compensateRotation(module));
+
+    }
+
+    // make pod rotate no more than 90 degrees
+    public double angleOptimization(SwerveModule module, double angle) {
+        if(Math.abs(angle - module.getAngle()) > Math.PI/2) {
+            angle += Math.PI;
+            module.setReverseDrive(true);
+        }
+        else
+            module.setReverseDrive(false);
+        return angle;
     }
 
     // compensate wheel rotation when pod rotates

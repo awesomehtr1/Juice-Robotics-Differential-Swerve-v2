@@ -3,15 +3,17 @@ package org.firstinspires.ftc.teamcode.swerve;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
+import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
 public class SwerveModule {
     private DcMotor rot;
     private DcMotor drive;
-    private SwerveRotationPID pid;
+    public SwerveRotationPID pid;
     private AS5600 as5600;
     private boolean reverseDrive = false;
 
+    private double targetAngle;
     private double rotPower;
 
     // swerve module wrapper for storing drive motor, rotation motor, rotation pid, and analog encoder
@@ -24,11 +26,14 @@ public class SwerveModule {
         this.as5600 = as5600;
     }
 
-    // sets PID target angle; takes -pi to pi radian format
-    public void setAngle(double angle) { pid.setState(angle); }
+    // sets PID target angle
+    public void setAngle(double angle) {
+        targetAngle = angle;
+        pid.setState(MathFunctions.angleWrap(angle));
+    }
 
     // returns analog encoder angle; returns -pi to pi radian format
-    public double getAngle() { return as5600.getAngle(); }
+    public double getAngle() { return as5600.getLowPassEstimate(); }
 
     // updates PID with current angle; returns power
     public double updatePID(double pos) { return pid.updatePID(pos); }
@@ -52,4 +57,6 @@ public class SwerveModule {
 
     // returns last stored rotation power
     public double getRotPower() { return rotPower; }
+
+    public double getTargetAngle() { return targetAngle; }
 }

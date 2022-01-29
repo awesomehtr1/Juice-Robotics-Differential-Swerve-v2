@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.eocv;
+package org.firstinspires.ftc.teamcode.vision.eocv;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
@@ -39,8 +39,8 @@ public class TestVisionPipeline extends OpenCvPipeline {
 
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(23, 50, 70);
-        Scalar highHSV = new Scalar(32, 255, 255);
+        Scalar lowHSV = new Scalar(25, 50, 70);
+        Scalar highHSV = new Scalar(28, 255, 255);
 
         Scalar lowHSVGreen = new Scalar(35, 50, 70); // green test lower
         Scalar highHSVGreen = new Scalar(70, 255, 255); // green test upper
@@ -48,7 +48,7 @@ public class TestVisionPipeline extends OpenCvPipeline {
         Scalar lowHSVPurple = new Scalar(110, 50, 70); // purple test lower
         Scalar highHSVPurple = new Scalar(145, 255, 255); // purple test upper
 
-        Core.inRange(mat, lowHSVPurple, highHSVPurple, mat);
+        Core.inRange(mat, lowHSV, highHSV, mat);
 
         Mat left = mat.submat(LEFTBOX);
         Mat center = mat.submat(CENTERBOX);

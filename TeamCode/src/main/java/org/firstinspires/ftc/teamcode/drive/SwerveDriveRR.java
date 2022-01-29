@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.helperfunctions.Lamprey;
+import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.LowPassFilter;
 import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
@@ -41,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -76,10 +75,10 @@ public class SwerveDriveRR extends SwerveDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    private DcMotorEx rotLeftFront, rotLeftRear, rotRightRear, rotRightFront;
-    private List<DcMotorEx> motors;
-    private List<DcMotorEx> rotMotors;
+    public DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public DcMotorEx rotLeftFront, rotLeftRear, rotRightRear, rotRightFront;
+    public List<DcMotorEx> motors;
+    public List<DcMotorEx> rotMotors;
 
 
 
@@ -96,8 +95,8 @@ public class SwerveDriveRR extends SwerveDrive {
     ElapsedTime time = new ElapsedTime();
     public SwerveRotationPID LFPID, LRPID, RRPID, RFPID = new SwerveRotationPID(kP, kI, kD, kS, time);
 
-    public Lamprey LFLamprey, LRLamprey, RRLamprey, RFLamprey; // lamprey objects
-    public List<Lamprey> lampreys;
+    public AS5600 LFAS5600, LRAS5600, RRAS5600, RFAS5600; // lamprey objects
+    public List<AS5600> AS5600s;
 
     public boolean SanfordGyro;
     public SanfordGyro sanfordGyro;
@@ -106,6 +105,13 @@ public class SwerveDriveRR extends SwerveDrive {
     public final double sanfordA = 0.0;
     public LowPassFilter hubLowPassFilter = new LowPassFilter(hubA);
     public LowPassFilter sanfordLowPassFilter = new LowPassFilter(sanfordA);
+    public boolean rotationCompensation = false;
+
+    private final double rotationSpeed = 6000.0 / 2 * 16 / 84; // 571.428571429 rpm
+    private final double driveSpeed = 6000.0 * 24 / 105 * 22 / 14 / 3; // 718.367346939 rpm
+    private final double wheelRotations = 22.0 / 14 / 3; // 0.52380952381 per pod rotation
+
+    public double correctionPowerLF, correctionPowerLR, correctionPowerRR, correctionPowerRF;
 
     public SwerveDriveRR(HardwareMap hardwareMap, boolean SanfordGyro) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH);
@@ -145,14 +151,14 @@ public class SwerveDriveRR extends SwerveDrive {
         rotRightFront = hardwareMap.get(DcMotorEx.class, "rotRightFront");
 
         // TODO: update with lamprey device names
-        LFLamprey = new Lamprey(hardwareMap, null);
-        LRLamprey = new Lamprey(hardwareMap, null);
-        RRLamprey = new Lamprey(hardwareMap, null);
-        RFLamprey = new Lamprey(hardwareMap, null);
+        LFAS5600 = new AS5600(hardwareMap, "LFAnalog", 0.0);
+        LRAS5600 = new AS5600(hardwareMap, "RFAnalog", 0.0);
+        RRAS5600 = new AS5600(hardwareMap, "RBAnalog", 0.0);
+        RFAS5600 = new AS5600(hardwareMap, "LBAnalog", 0.0);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         rotMotors = Arrays.asList(rotLeftFront, rotLeftRear, rotRightRear, rotRightFront);
-        lampreys = Arrays.asList(LFLamprey, LRLamprey, RRLamprey, RFLamprey);
+        AS5600s = Arrays.asList(LFAS5600, LRAS5600, RRAS5600, RFAS5600);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -305,8 +311,9 @@ public class SwerveDriveRR extends SwerveDrive {
     @Override
     public List<Double> getWheelPositions() {
         List<Double> wheelPositions = new ArrayList<>();
-        for (DcMotorEx motor : motors) {
-            wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+        for (int i = 0; i < 4; i++) {
+            wheelPositions.add(encoderTicksToInches(
+                    motors.get(i).getCurrentPosition() + rotMotors.get(i).getCurrentPosition())); // TODO: check direction
         }
         return wheelPositions;
     }
@@ -322,10 +329,48 @@ public class SwerveDriveRR extends SwerveDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        if(!rotationCompensation) {
+            leftFront.setPower(v);
+            leftRear.setPower(v1);
+            rightRear.setPower(v2);
+            rightFront.setPower(v3);
+        }
+        else {
+            /*
+            swerve rotation is 6000 rpm motor 2:1 gear to 84:16 belt
+            rotation speed at 1.0 power of 571.428571429 rpm
+            drive is 6000 rpm motor (105:24) gear to 14:22 gear to 3:1 bevel
+            wheel rotation speed at 1.0 power of 718.367346939 rpm
+            rotation of module will drive 14:22 + 3:1 bevel gear set
+            every rotation will result in 22 / 14 / 3  = 0.52380952381 wheel rotations
+            to counteract the rotation:
+                drive power = requested drive power - (571.428571429 / 718.367346939 * 0.52380952381 * rotation power)
+            */
+            double rotLFPower = LFPID.updatePID(getModuleOrientations().get(0));
+            double rotLRPower = LRPID.updatePID(getModuleOrientations().get(1));
+            double rotRRPower = RRPID.updatePID(getModuleOrientations().get(2));
+            double rotRFPower = RFPID.updatePID(getModuleOrientations().get(3));
+
+            correctionPowerLF = returnCorrectionPower(rotLFPower);
+            correctionPowerLR = returnCorrectionPower(rotLRPower);
+            correctionPowerRR = returnCorrectionPower(rotRRPower);
+            correctionPowerRF = returnCorrectionPower(rotRFPower);
+
+            leftFront.setPower(v - correctionPowerLF);
+            leftRear.setPower(v1 - correctionPowerLR);
+            rightRear.setPower(v2 - correctionPowerRR);
+            rightFront.setPower(v3 - correctionPowerRF);
+        }
+    }
+
+    public double returnCorrectionPower(double rotationPower) {
+        return (rotationSpeed / driveSpeed * wheelRotations * rotationPower);
+    }
+
+    public int returnCorrectedDriveTicks(int driveTicks, int rotationTicks) {
+        int correctedDriveTicks = driveTicks;
+        correctedDriveTicks -= wheelRotations * rotationTicks;
+        return correctedDriveTicks;
     }
 
     @Override
@@ -371,7 +416,7 @@ public class SwerveDriveRR extends SwerveDrive {
     @Override
     public List<Double> getModuleOrientations() {
         List<Double> orientations = null;
-        for (Lamprey module : lampreys){
+        for (AS5600 module : AS5600s){
             module.update(); // updates angle measurement
             orientations.add(module.getAngle()); // adds the normalized angle to the list
         }

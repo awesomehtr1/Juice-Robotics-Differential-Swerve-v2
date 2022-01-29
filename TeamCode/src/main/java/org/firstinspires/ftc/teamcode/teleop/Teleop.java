@@ -72,8 +72,8 @@ public class Teleop extends LinearOpMode {
         // reset robot
         robot.lift.rest();
         robot.arm.intake();
-        robot.claw.rest();
-        robot.drive.turnTeleopDriveOn();
+        robot.claw.intake();
+        robot.drive.teleopDriveOn();
         robot.update();
 
         waitForStart();

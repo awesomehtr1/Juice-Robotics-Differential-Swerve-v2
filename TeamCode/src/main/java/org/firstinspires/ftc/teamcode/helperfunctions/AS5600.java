@@ -11,16 +11,20 @@ public class AS5600 {
     private final double maxVoltage = 3.286;
     private final double minVoltage = 0.001;
 
+    private LowPassFilter lowPassFilter;
+    private double a = 0.5;
+
     public AS5600(HardwareMap hardwareMap, String deviceName, double correction) {
         this.hardwareMap = hardwareMap;
         angleOut = hardwareMap.get(AnalogInput.class, deviceName);
         this.correction = correction;
+        lowPassFilter = new LowPassFilter(a);
     }
 
     // updates returns angle in pi to -pi format
     public double getAngle() {
         update();
-        return MathFunctions.angleWrap(angle);
+        return angle;
     }
 
     // gets output voltage, adjusts the voltage range, and linearizes the angle
@@ -29,7 +33,9 @@ public class AS5600 {
         angle -= minVoltage;
         angle /= (maxVoltage - minVoltage);
         angle *= (Math.PI * 2);
-        applyLinearity(angle);
+        angle = applyLinearity(-angle);
+        angle = MathFunctions.angleWrap(angle);
+        lowPassFilter.update(angle);
     }
 
     // applies function linearize the output
@@ -47,17 +53,18 @@ public class AS5600 {
 //            angle = (angle - 1.32) / 0.1;
 //        else if(1.465 < angle && angle <= Math.PI)
 //            angle = (angle + 0.1) / 1.021;
-//        if(-Math.PI <= angle && angle <= -1.1)
-//            angle = (angle + 0.03) / 1.005;
-//        else if(-1.1 < angle && angle <= 0)
-//            angle = angle / 1.05;
-//        else if(0 < angle && angle < Math.PI)
-//            angle = angle / 0.98;
         return angle;
     }
 
     // returns raw output voltage
     public double getVoltage() {
         return angleOut.getVoltage();
+    }
+
+    public void setLowPassConstant(double a) { this.a = a; }
+
+    public double getLowPassEstimate () {
+        update();
+        return lowPassFilter.returnValue();
     }
 }
