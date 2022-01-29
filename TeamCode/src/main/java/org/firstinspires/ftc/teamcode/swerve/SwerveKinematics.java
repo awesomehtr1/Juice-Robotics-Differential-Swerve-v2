@@ -11,8 +11,8 @@ public class SwerveKinematics {
     private double[][] wheelAngleSpeed = new double[4][2]; // angle, speed format
 
     // calculates angle and speed for all swerve modules provided a translation vector
-    // broken up into x (strafePower) and y (forward) power components
-    // and a rotation vector
+    // broken up into x (strafePower) and y (forward) power components and a rotation vector
+    // angles and rotation vector is CW = positive and 0 is straight forwards
     public void calculateKinematics(double rotationPower, double strafePower, double forwardPower) {
         if(rotationPower != 0 || strafePower != 0 || forwardPower != 0) {
             // math functions used to calculate angle and speed

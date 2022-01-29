@@ -56,9 +56,9 @@ public class SwerveDrive {
         RBrot = hardwareMap.get(DcMotor.class, "RBrot");
 
         //TODO: reverse rot motors if needed
-//        RFrot.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
+        RFrot.setDirection(DcMotorSimple.Direction.REVERSE);
+        LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
+        LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
         RBrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
         RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.523);
