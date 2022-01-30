@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
@@ -19,9 +20,11 @@ import org.firstinspires.ftc.teamcode.swerve.SwerveModule;
 public class SwerveModulePIDTuner extends LinearOpMode {
     public static double kP, kI, kD, kS;
     ElapsedTime time = new ElapsedTime();
+    VoltageSensor voltageSensor;
 
     public void runOpMode(){
         SwerveDrive drive = new SwerveDrive(hardwareMap);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         TelemetryPacket packet = new TelemetryPacket();
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -57,11 +60,11 @@ public class SwerveModulePIDTuner extends LinearOpMode {
                     }
                     else if (time.seconds() >= 1.5)
                         time.reset();
-                    module.setRot(module.updatePID(angle));
+                    double power = module.updatePID(angle);
+                    power = power * 12 / voltageSensor.getVoltage();
+                    module.setRot(power);
                 }
             }
-
-
             packet.put("Set State", setState);
             packet.put("RF", drive.swerveModules[0].getAngle());
             packet.put("LF", drive.swerveModules[1].getAngle());

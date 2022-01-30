@@ -8,6 +8,16 @@ public class SwerveRotationPID extends BasicPID {
     }
 
     @Override
+    public double calculateError(double currentState) {
+        double diff = desiredState - currentState;
+        if(diff > Math.PI)
+            return diff -= (2 * Math.PI);
+        if(diff < -Math.PI)
+            return diff += (2 * Math.PI);
+        return diff;
+    }
+
+    @Override
     public boolean shouldIntegralBeZeroed(double error, double desiredState) {
         return Math.signum(error) != Math.signum(prevError);
     }

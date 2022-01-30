@@ -29,7 +29,7 @@ public class SwerveModule {
     // sets PID target angle
     public void setAngle(double angle) {
         targetAngle = angle;
-        pid.setState(MathFunctions.angleWrap(angle));
+        pid.setState(angle);
     }
 
     // returns analog encoder angle; returns -pi to pi radian format

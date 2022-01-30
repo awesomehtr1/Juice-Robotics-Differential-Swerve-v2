@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.helperfunctions.PID;
 
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BasicPID {
@@ -33,7 +34,7 @@ public class BasicPID {
         }
 
         double deltaTime = (currentTime - prevTime)/1000;
-        double error = desiredState - currentState;
+        double error = calculateError(currentState);
         double deltaError = error - prevError;
         prevTime = currentTime;
         prevError = error;
@@ -52,6 +53,8 @@ public class BasicPID {
             return power + (Math.signum(power) * kS);
         return power;
     }
+
+    public double calculateError(double currentState) { return desiredState - currentState; }
 
     // sets target state of PID
     public void setState(double desiredState){
