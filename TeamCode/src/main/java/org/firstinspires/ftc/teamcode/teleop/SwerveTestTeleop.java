@@ -15,7 +15,7 @@ public class SwerveTestTeleop extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         waitForStart();
         while(opModeIsActive()) {
-            double rotation = gamepad1.right_stick_x * 0.5;
+            double rotation = gamepad1.right_stick_x;
             double strafe = gamepad1.left_stick_x;
             double forward = -gamepad1.left_stick_y;
             swerveDrive.setMotorPowers(rotation, strafe, forward);

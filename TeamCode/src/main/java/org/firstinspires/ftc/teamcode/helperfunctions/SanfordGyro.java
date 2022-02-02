@@ -12,7 +12,7 @@ public class SanfordGyro {
 
     public SanfordGyro(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
-        angleOut = hardwareMap.get(AnalogInput.class,"SanfordGyro"); // TODO: update
+        angleOut = hardwareMap.get(AnalogInput.class,"gyro");
         firstUpdateLoop = true;
         cumulativeAngle = Math.PI;
     }
