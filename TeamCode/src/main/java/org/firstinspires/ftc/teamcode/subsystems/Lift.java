@@ -6,17 +6,14 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 public class Lift implements Subsystem{
     Robot robot;
-    Servo servo1, servo2, servo3, servo4;
+    Servo R1, R2, L1, L2;
     final double rest = 0; // TODO: update positions
-    final double low = 0;
     final double mid = 0;
     final double high = 0;
-    final double offset = 0;
 
     // stores current state of lift
     enum State {
         REST,
-        LOW,
         MID,
         HIGH
     }
@@ -24,10 +21,10 @@ public class Lift implements Subsystem{
 
     public Lift(Robot robot){
         this.robot = robot;
-        servo1 = robot.hardwareMap.get(Servo.class, ""); // TODO: update device name
-        servo2 = robot.hardwareMap.get(Servo.class, "");
-        servo3 = robot.hardwareMap.get(Servo.class, "");
-        servo4 = robot.hardwareMap.get(Servo.class, "");
+        R1 = robot.hardwareMap.get(Servo.class, "liftR1");
+        R2 = robot.hardwareMap.get(Servo.class, "liftR2");
+        L1 = robot.hardwareMap.get(Servo.class, "liftL1");
+        L2 = robot.hardwareMap.get(Servo.class, "liftL2");
         state = State.REST;
     }
 
@@ -35,8 +32,6 @@ public class Lift implements Subsystem{
     public void update() {
         if (state == State.REST)
             setPos(rest);
-        else if (state == State.LOW)
-            setPos(low);
         else if (state == State.MID)
             setPos(mid);
         else if (state == State.HIGH)
@@ -45,9 +40,6 @@ public class Lift implements Subsystem{
 
     // use the setXXX methods to set the position/state of the lift
     public void rest(){ state = State.REST; }
-    public void low(){
-        state = State.LOW;
-    }
     public void mid(){
         state = State.MID;
     }
@@ -56,10 +48,9 @@ public class Lift implements Subsystem{
     }
 
     public void setPos(double pos){
-        // TODO: change relative position setting if needed for servo2/3
-        servo1.setPosition(pos);
-        servo2.setPosition(1 - pos + offset);
-        servo3.setPosition(1 - pos + offset);
-        servo4.setPosition(pos);
+        L1.setPosition(1- pos);
+        L2.setPosition(1- pos);
+        R1.setPosition(pos);
+        R2.setPosition(pos);
     }
 }

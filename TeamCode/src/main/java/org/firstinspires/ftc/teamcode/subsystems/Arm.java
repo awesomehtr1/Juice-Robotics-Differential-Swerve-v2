@@ -19,8 +19,8 @@ public class Arm implements Subsystem{
 
     public Arm(Robot robot) {
         this.robot = robot;
-        armServo1 = robot.hardwareMap.get(Servo.class, ""); // TODO: update device name
-        armServo2 = robot.hardwareMap.get(Servo.class, "");
+        armServo1 = robot.hardwareMap.get(Servo.class, "ArmR"); // TODO: update device name
+        armServo2 = robot.hardwareMap.get(Servo.class, "ArmL");
         state = State.INTAKE;
     }
 

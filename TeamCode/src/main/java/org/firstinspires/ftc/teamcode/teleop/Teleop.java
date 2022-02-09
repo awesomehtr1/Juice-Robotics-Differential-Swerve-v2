@@ -35,8 +35,8 @@ public class Teleop extends LinearOpMode {
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder()
                 .typeToggle(()-> gamepad1.left_trigger > 0.05)
-                .addAction(()-> robot.drive.slowModeOn())
-                .addAction(()-> robot.drive.slowModeOff())
+                .addAction(()-> robot.drive.setSlowmode(true))
+                .addAction(()-> robot.drive.setSlowmode(false))
                 .build());
 
         // DRIVER 2
@@ -50,12 +50,6 @@ public class Teleop extends LinearOpMode {
                 .typeTrigger(()-> gamepad2.dpad_left)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.mid())
-                .addAction(()-> robot.arm.deposit())
-                .build());
-        robot.createTeleOpManager(new TeleOpManagerBuilder()
-                .typeTrigger(()-> gamepad2.dpad_right)
-                .addAction(()-> robot.claw.grip())
-                .addAction(()-> robot.lift.low())
                 .addAction(()-> robot.arm.deposit())
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder()
@@ -73,12 +67,15 @@ public class Teleop extends LinearOpMode {
         robot.lift.rest();
         robot.arm.intake();
         robot.claw.intake();
-        robot.drive.teleopDriveOn();
         robot.update();
 
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()){
+            robot.drive.gamepadInput(
+                    gamepad1.left_stick_x,
+                    gamepad1.left_stick_y,
+                    gamepad1.right_stick_x);
             robot.update();
         }
     }

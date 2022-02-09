@@ -4,6 +4,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
@@ -11,6 +12,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Spinner;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SwerveDriveSubsystem;
+import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ public class Robot {
     public HardwareMap hardwareMap; // stores hardware map
 
     // robot subsystems
-    public Drive drive;
+    public SwerveDriveSubsystem drive;
     public Lift lift;
     public Intake intake;
     public Arm arm;
@@ -31,6 +34,9 @@ public class Robot {
 
     // gamepads
     public Gamepad gamepad1, gamepad2;
+
+    // gyro
+    public SanfordGyro gyro;
 
     public Robot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         this.hardwareMap = hardwareMap; // init passed-in hardwaremap
@@ -45,7 +51,7 @@ public class Robot {
         }
 
         // init subsystems
-        drive = new Drive(this);
+        drive = new SwerveDriveSubsystem(this);
         lift = new Lift(this);
         intake = new Intake(this);
         arm = new Arm(this);
@@ -62,6 +68,9 @@ public class Robot {
         Subsystems.add(arm);
         Subsystems.add(claw);
         Subsystems.add(spinner);
+
+        // init gyro
+        gyro = new SanfordGyro(hardwareMap);
     }
 
     // updates robot
@@ -73,7 +82,8 @@ public class Robot {
     }
 
     // creates teleopmanager and adds it to list of teleopmanagers
-    public void createTeleOpManager(TeleOpManager teleOpManager) {
-        TeleOpManagers.add(teleOpManager);
-    }
+    public void createTeleOpManager(TeleOpManager teleOpManager) { TeleOpManagers.add(teleOpManager); }
+
+    // returns robot heading
+    public double getHeading() { return gyro.getLowPassEstimate(); }
 }

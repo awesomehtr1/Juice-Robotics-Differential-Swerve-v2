@@ -6,15 +6,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class SanfordGyro {
     HardwareMap hardwareMap;
     AnalogInput angleOut;
-    double corectionCoeff = -360/358.0*7200/7319.98 * 1.002087682672234 * 360/360.3990130404954;
-    boolean firstUpdateLoop;
-    double prevAngle, cumulativeAngle;
+    private double corectionCoeff = -360/358.0*7200/7319.98 * 1.002087682672234 * 360/360.3990130404954;
+    private boolean firstUpdateLoop;
+    private double prevAngle, cumulativeAngle;
+
+    private LowPassFilter lowPassFilter;
+    private final double a = 0.1;
 
     public SanfordGyro(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         angleOut = hardwareMap.get(AnalogInput.class,"gyro");
         firstUpdateLoop = true;
         cumulativeAngle = Math.PI;
+        lowPassFilter = new LowPassFilter(a);
     }
 
     public double getAngleRaw(){
@@ -33,5 +37,10 @@ public class SanfordGyro {
 
     public double getAngleCorrected(){
         return MathFunctions.angleWrap(cumulativeAngle);
+    }
+
+    public double getLowPassEstimate() {
+        lowPassFilter.update(getAngleCorrected());
+        return lowPassFilter.returnValue();
     }
 }
