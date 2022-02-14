@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 @TeleOp(name = "Teleop Dash", group = "Teleop")
-public class TeleopDash extends Teleop{
+public class TeleopDash extends Teleop {
     private static void logGamepad(Telemetry telemetry, Gamepad gamepad, String prefix) {
         telemetry.addData(prefix + "Synthetic",
                 gamepad.getGamepadId() == Gamepad.ID_UNASSOCIATED);

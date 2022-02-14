@@ -37,9 +37,7 @@ public class Intake implements Subsystem{
     public void off(){
         state = State.OFF;
     }
-    public void on(){
-        state = State.ON;
-    }
+    public void on(){ state = State.ON; }
 
     public void setPower(double power){
         // TODO: change power direction if needed

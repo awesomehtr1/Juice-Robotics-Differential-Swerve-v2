@@ -19,6 +19,7 @@ public class SwerveDriveSubsystem implements Subsystem{
         hardwareMap = robot.hardwareMap;
         drive = new SwerveDrive(hardwareMap);
         slowmode = false;
+        fieldCentric = false;
     }
     public void update() {
         if(!slowmode) power = 1.0;

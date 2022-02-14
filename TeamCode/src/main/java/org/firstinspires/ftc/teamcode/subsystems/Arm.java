@@ -7,13 +7,17 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Arm implements Subsystem{
     Robot robot;
     Servo armServo1, armServo2;
-    static double intakePos = 0.0; // TODO: tune values
-    static double depositPos = 0.0;
+    final double intakePos = 0.0; // TODO: tune values
+    final double depositLowPos = 0.0;
+    final double depositMidPos = 0.0;
+    final double depositHighPos = 0.0;
 
     // stores current state of arm
     public enum State{
         INTAKE,
-        DEPOSIT
+        DEPOSITLOW,
+        DEPOSITMID,
+        DEPOSITHIGH
     }
     Arm.State state;
 
@@ -28,13 +32,19 @@ public class Arm implements Subsystem{
     public void update() {
         if(state == State.INTAKE)
             setPos(intakePos);
-        if(state == State.DEPOSIT)
-            setPos(depositPos);
+        if(state == State.DEPOSITLOW)
+            setPos(depositLowPos);
+        if(state == State.DEPOSITMID)
+            setPos(depositLowPos);
+        if(state == State.DEPOSITHIGH)
+            setPos(depositLowPos);
     }
 
     // use these methods to change state of arm
     public void intake() { state = State.INTAKE; }
-    public void deposit() { state = State.DEPOSIT;}
+    public void depositLow() { state = State.DEPOSITLOW;}
+    public void depositMid() { state = State.DEPOSITMID;}
+    public void depositHigh() { state = State.DEPOSITHIGH;}
 
     public void setPos(double pos) {
         armServo1.setPosition(pos);

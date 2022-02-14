@@ -1,13 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleopmanager;
 
-import android.app.job.JobInfo;
-
-import org.firstinspires.ftc.teamcode.teleop.Teleop;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 public class TeleOpManager {
     public BooleanSupplier trigger; // gamepad boolean input
