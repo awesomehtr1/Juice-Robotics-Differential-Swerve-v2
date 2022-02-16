@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Claw implements Subsystem{
     Robot robot;
     Servo clawServo;
-    static double grip = 0.0;
-    static double intake = 0.0;
+    static double grip = 0.5;
+    static double intake = 0.45;
 
     // stores current state of claw
     public enum State{
@@ -19,7 +19,7 @@ public class Claw implements Subsystem{
 
     public Claw(Robot robot) {
         this.robot = robot;
-        clawServo = robot.hardwareMap.get(Servo.class, ""); // TODO: update device name
+        clawServo = robot.hardwareMap.get(Servo.class, "claw"); // TODO: update device name
         state = State.INTAKE;
     }
 

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class TeleOpManagerBuilder {
-    private BooleanSupplier trigger = null; // gamepad boolean input
-    private ArrayList<RobotAction> actions = null; // passed in robot action list
+    private BooleanSupplier trigger; // gamepad boolean input
+    private ArrayList<RobotAction> actions; // passed in robot action list
 
     private enum MODE {
         TOGGLE,
@@ -16,12 +16,14 @@ public class TeleOpManagerBuilder {
     private MODE mode;
 
     public TeleOpManagerBuilder typeTrigger(BooleanSupplier trigger) {
+        actions = new ArrayList<RobotAction>();
         this.trigger = trigger;
         mode = MODE.TRIGGER;
         return this;
     }
 
     public TeleOpManagerBuilder typeToggle(BooleanSupplier trigger) {
+        actions = new ArrayList<RobotAction>();
         this.trigger = trigger;
         mode = MODE.TOGGLE;
         return this;

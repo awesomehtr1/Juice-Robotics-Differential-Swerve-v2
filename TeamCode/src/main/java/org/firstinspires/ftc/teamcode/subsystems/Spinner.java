@@ -18,7 +18,7 @@ public class Spinner implements Subsystem{
 
     public Spinner(Robot robot) {
         this.robot = robot;
-        wheelServo = robot.hardwareMap.get(CRServo.class, ""); // TODO: update device name
+        wheelServo = robot.hardwareMap.get(CRServo.class, "duckSpinner"); // TODO: update device name
         state = State.OFF;
     }
 

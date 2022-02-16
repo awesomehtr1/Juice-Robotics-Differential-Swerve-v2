@@ -18,10 +18,10 @@ public class Intake implements Subsystem{
 
     public Intake(Robot robot){
         this.robot = robot;
-        servoR1 = robot.hardwareMap.get(CRServo.class, ""); // TODO: update device name
-        servoR2 = robot.hardwareMap.get(CRServo.class, "");
-        servoL1 = robot.hardwareMap.get(CRServo.class, "");
-        servoL2 = robot.hardwareMap.get(CRServo.class, "");
+        servoR1 = robot.hardwareMap.get(CRServo.class, "intakeR1"); // TODO: update device name
+        servoR2 = robot.hardwareMap.get(CRServo.class, "intakeR2");
+        servoL1 = robot.hardwareMap.get(CRServo.class, "intakeL1");
+        servoL2 = robot.hardwareMap.get(CRServo.class, "intakeL2");
         state = State.OFF;
     }
 
@@ -30,7 +30,7 @@ public class Intake implements Subsystem{
         if(state == State.OFF)
             setPower(0);
         if(state == State.ON)
-            setPower(1);
+            setPower(-1);
     }
 
     // use these methods to set the state of the intake

@@ -25,7 +25,6 @@ public class Robot {
     public HardwareMap hardwareMap; // stores hardware map
 
     // robot subsystems
-    public SwerveDriveSubsystem drive;
     public Lift lift;
     public Intake intake;
     public Arm arm;
@@ -51,7 +50,6 @@ public class Robot {
         }
 
         // init subsystems
-        drive = new SwerveDriveSubsystem(this);
         lift = new Lift(this);
         intake = new Intake(this);
         arm = new Arm(this);
@@ -62,7 +60,6 @@ public class Robot {
         TeleOpManagers = new ArrayList<>();
 
         // add subsystems to list
-        Subsystems.add(drive);
         Subsystems.add(lift);
         Subsystems.add(intake);
         Subsystems.add(arm);

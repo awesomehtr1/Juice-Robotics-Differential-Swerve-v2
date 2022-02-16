@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 @TeleOp(name = "Lift Pos Tuning", group = "TestOpModes")
 public class LiftPosTuning extends LinearOpMode {
-    public static double pos = 0.0;
+    public static double pos = 0.5;
     Servo l1, l2, r1, r2;
 
     public void runOpMode() throws InterruptedException {

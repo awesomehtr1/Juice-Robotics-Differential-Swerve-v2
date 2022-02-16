@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
 
 public class Lift implements Subsystem{
     Robot robot;
     Servo R1, R2, L1, L2;
-    final double rest = 0; // TODO: update positions
-    final double mid = 0;
-    final double high = 0;
+    final double rest = 0.15;
+    final double mid = 0.47;
+    final double high = 0.8;
+
+    boolean move;
+    double delay;
+    ElapsedTime time;
 
     // stores current state of lift
     enum State {
@@ -30,11 +35,13 @@ public class Lift implements Subsystem{
 
     @Override
     public void update() {
-        if (state == State.REST)
+        move = time.milliseconds() > delay ? true : false;
+
+        if (state == State.REST && move && move)
             setPos(rest);
-        else if (state == State.MID)
+        else if (state == State.MID && move)
             setPos(mid);
-        else if (state == State.HIGH)
+        else if (state == State.HIGH && move)
             setPos(high);
     }
 
@@ -48,9 +55,15 @@ public class Lift implements Subsystem{
     }
 
     public void setPos(double pos){
-        L1.setPosition(1- pos);
-        L2.setPosition(1- pos);
+        L1.setPosition(1 - pos);
+        L2.setPosition(1 - pos);
         R1.setPosition(pos);
         R2.setPosition(pos);
+    }
+
+    public void delayAction(double delay) {
+        this.delay = delay;
+        if(time.milliseconds() > delay)
+            time.reset();
     }
 }

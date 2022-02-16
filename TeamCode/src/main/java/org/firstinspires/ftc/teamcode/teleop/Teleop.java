@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 import org.firstinspires.ftc.teamcode.teleopmanager.RobotAction;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
@@ -19,6 +20,8 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
+        SwerveDrive drive = new SwerveDrive(hardwareMap);
+
         // teleop managers
         // DRIVER 1
         robot.createTeleOpManager(new TeleOpManagerBuilder() // intake
@@ -28,26 +31,32 @@ public class Teleop extends LinearOpMode {
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // slowmode
                 .typeToggle(()-> gamepad1.left_trigger > 0.1)
-                .addAction(()-> robot.drive.setSlowmode(true))
-                .addAction(()-> robot.drive.setSlowmode(false))
+                .addAction(()-> drive.setSlowmode(true))
+                .addAction(()-> drive.setSlowmode(false))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring high
                 .typeTrigger(()-> gamepad1.dpad_up)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.high())
-                .addAction(()-> robot.arm.depositHigh())
+                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.arm.high())
+                .addAction(()-> robot.arm.delayAction(200))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring mid
                 .typeTrigger(()-> gamepad1.dpad_left)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.mid())
-                .addAction(()-> robot.arm.depositMid())
+                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.arm.mid())
+                .addAction(()-> robot.arm.delayAction(200))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring low
                 .typeTrigger(()-> gamepad1.dpad_right)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.rest())
-                .addAction(()-> robot.arm.depositLow())
+                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.arm.low())
+                .addAction(()-> robot.arm.delayAction(200))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // release cargo
                 .typeTrigger(()-> gamepad1.a)
@@ -55,9 +64,9 @@ public class Teleop extends LinearOpMode {
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // reset for intaking
                 .typeTrigger(()-> gamepad1.dpad_down)
-                .addAction(()-> robot.lift.rest())
-                .addAction(()-> robot.arm.intake())
                 .addAction(()-> robot.claw.intake())
+                .addAction(()-> robot.arm.intake())
+                .addAction(()-> robot.lift.rest())
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // duck spinner
                 .typeToggle(()-> gamepad1.x)
@@ -74,12 +83,10 @@ public class Teleop extends LinearOpMode {
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
-            robot.drive.gamepadInput(
-                    gamepad1.left_stick_x,
-                    gamepad1.left_stick_y,
-                    gamepad1.right_stick_x
-            );
-            robot.update();
+            double rotation = gamepad1.right_stick_x;
+            double strafe = gamepad1.left_stick_x;
+            double forward = -gamepad1.left_stick_y;
+            drive.setMotorPowers(rotation, strafe, forward);
         }
     }
 }

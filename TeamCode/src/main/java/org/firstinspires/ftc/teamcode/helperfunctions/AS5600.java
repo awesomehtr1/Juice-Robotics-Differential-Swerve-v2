@@ -12,7 +12,7 @@ public class AS5600 {
     private final double minVoltage = 0.001;
 
     private LowPassFilter lowPassFilter;
-    private double a = 0.5;
+    private double a = 0.05;
 
     public AS5600(HardwareMap hardwareMap, String deviceName, double correction) {
         this.hardwareMap = hardwareMap;

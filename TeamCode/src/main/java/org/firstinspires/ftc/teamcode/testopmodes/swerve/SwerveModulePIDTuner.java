@@ -36,12 +36,13 @@ public class SwerveModulePIDTuner extends LinearOpMode {
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()){
-            if(gamepad1.a) {
-                rotate = true;
-                time.reset();
-            }
-            if(gamepad1.b)
-                rotate = false;
+//            if(gamepad1.a) {
+//                rotate = true;
+//                time.reset();
+//            }
+//            if(gamepad1.b)
+//                rotate = false;
+            rotate = true;
 
             for(SwerveModule module : drive.swerveModules) {
                 double angle = module.getAngle();

@@ -33,6 +33,8 @@ public class SwerveDrive {
     private SwerveModule RF, LF, LB, RB;
     public SwerveModule[] swerveModules = new SwerveModule[4];
 
+    private double drivePower = 0.3;
+
     VoltageSensor voltageSensor;
 
     public SwerveDrive(HardwareMap hardwareMap) {
@@ -71,10 +73,10 @@ public class SwerveDrive {
         LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.258);
         RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.940);
 
-        RFPID = new SwerveRotationPID(0.7, 0, 0.021, 0.06, RFtime);
-        LFPID = new SwerveRotationPID(0.73, 0, 0.017, 0.05, LFtime);
-        LBPID = new SwerveRotationPID(0.75, 0, 0.021, 0.06, LBtime);
-        RBPID = new SwerveRotationPID(0.75, 0, 0.014, 0.06, RBtime);
+        RFPID = new SwerveRotationPID(0.6, 0.015, 0.008, 0.04, RFtime);
+        LFPID = new SwerveRotationPID(0.65, 0.015, 0.0065, 0.03, LFtime);
+        LBPID = new SwerveRotationPID(0.7, 0.01, 0.005, 0.04, LBtime);
+        RBPID = new SwerveRotationPID(1.0, 0.015, 0.001, 0.06, RBtime);
 
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
         LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
@@ -90,7 +92,10 @@ public class SwerveDrive {
 
     // sets rotation and drive powers using inputs from gamepad
     public void setMotorPowers(double rotation, double strafe, double forward) {
-        swerveKinematics.calculateKinematics(rotation, strafe, forward);
+        swerveKinematics.calculateKinematics(
+                rotation * drivePower,
+                strafe * drivePower,
+                forward * drivePower);
         double[] rotAngleArray = swerveKinematics.getWheelAngles();
         double[] drivePowerArray = swerveKinematics.getWheelVelocities();
         setRotPowerArray(rotAngleArray);
@@ -145,4 +150,6 @@ public class SwerveDrive {
         for (int i = 0; i < 4; i++)
             setDrivePower(swerveModules[i], drivePowerArray[i]);
     }
+
+    public void setSlowmode(boolean slowmode) { drivePower = slowmode ? 0.3 : 1.0; }
 }
