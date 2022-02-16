@@ -65,4 +65,10 @@ public class Arm implements Subsystem{
         if(time.milliseconds() > delay)
             time.reset();
     }
+
+    public void delayAction(double delay, Arm.State state) {
+        this.delay = delay;
+        if(time.milliseconds() > delay && this.state != state)
+            time.reset();
+    }
 }

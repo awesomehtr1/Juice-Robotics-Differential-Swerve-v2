@@ -66,4 +66,10 @@ public class Lift implements Subsystem{
         if(time.milliseconds() > delay)
             time.reset();
     }
+
+    public void delayAction(double delay, Lift.State state) {
+        this.delay = delay;
+        if(time.milliseconds() > delay && this.state != state)
+            time.reset();
+    }
 }

@@ -1,19 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
-import org.firstinspires.ftc.teamcode.teleopmanager.RobotAction;
-import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @TeleOp(name = "Teleop", group = "Teleop")
 public class Teleop extends LinearOpMode {
