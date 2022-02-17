@@ -35,4 +35,6 @@ public class Vision{
             public void onError(int errorCode) { }
         });
     }
+
+    public VisionPipeline.POS getPosition() { return detector.getPosition(); }
 }

@@ -8,10 +8,10 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Arm implements Subsystem{
     Robot robot;
     Servo armServo1, armServo2;
-    final double intakePos = 0.04;
-    final double depositLowPos = 0.97;
-    final double depositMidPos = 0.95;
-    final double depositHighPos = 0.87;
+    final double intakePos = 0.05;
+    final double depositLowPos = 0.98;
+    final double depositMidPos = 0.9;
+    final double depositHighPos = 0.9;
 
     boolean move;
     double delay;
@@ -44,9 +44,9 @@ public class Arm implements Subsystem{
         if(state == State.DEPOSITLOW && move)
             setPos(depositLowPos);
         if(state == State.DEPOSITMID && move)
-            setPos(depositLowPos);
+            setPos(depositMidPos);
         if(state == State.DEPOSITHIGH && move)
-            setPos(depositLowPos);
+            setPos(depositHighPos);
     }
 
     // use these methods to change state of arm

@@ -19,6 +19,12 @@ public class SwerveTestTeleop extends LinearOpMode {
             double strafe = gamepad1.left_stick_x;
             double forward = -gamepad1.left_stick_y;
             swerveDrive.setMotorPowers(rotation, strafe, forward);
+
+            if(gamepad1.a)
+                swerveDrive.setSlowmode(true);
+            if(gamepad1.b)
+                swerveDrive.setSlowmode(false);
+
             packet.put("RF Current", swerveDrive.swerveModules[0].getAngle());
             packet.put("Atan2 Target", swerveDrive.swerveKinematics.getWheelAngles()[0]);
             packet.put("Final Target", swerveDrive.swerveModules[0].getTargetAngle());

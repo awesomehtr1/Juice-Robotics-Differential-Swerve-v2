@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Lift implements Subsystem{
     Robot robot;
     Servo R1, R2, L1, L2;
-    final double rest = 0.15;
-    final double mid = 0.47;
-    final double high = 0.8;
+    final double rest = 0.0;
+    final double mid = 0.25;
+    final double high = 0.6;
 
     boolean move;
     double delay;
@@ -31,6 +31,8 @@ public class Lift implements Subsystem{
         L1 = robot.hardwareMap.get(Servo.class, "liftL1");
         L2 = robot.hardwareMap.get(Servo.class, "liftL2");
         state = State.REST;
+        time = new ElapsedTime();
+        move = true;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.helperfunctions;
 
 public class LowPassFilter {
-    double a; // 0 < a < 1
+    public double a; // 0 < a < 1
     double previousEstimate = 0;
     double currentEstimate = 0;
 

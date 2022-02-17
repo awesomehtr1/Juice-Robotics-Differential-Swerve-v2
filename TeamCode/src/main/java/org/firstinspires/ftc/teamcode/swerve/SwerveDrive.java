@@ -92,19 +92,28 @@ public class SwerveDrive {
 
     // sets rotation and drive powers using inputs from gamepad
     public void setMotorPowers(double rotation, double strafe, double forward) {
+        double deadzone = 0.1;
+        if(drivePower == 1.0)
+            rotation *= 0.5;
         swerveKinematics.calculateKinematics(
                 rotation * drivePower,
                 strafe * drivePower,
                 forward * drivePower);
         double[] rotAngleArray = swerveKinematics.getWheelAngles();
         double[] drivePowerArray = swerveKinematics.getWheelVelocities();
+        if(Math.abs(strafe) < deadzone && Math.abs(forward) < deadzone && Math.abs(rotation) < deadzone) {
+            drivePowerArray[0] = 0;
+            drivePowerArray[1] = 0;
+            drivePowerArray[2] = 0;
+            drivePowerArray[3] = 0;
+        }
         setRotPowerArray(rotAngleArray);
         setDrivePowerArray(drivePowerArray);
     }
 
     // method for setting pid target for individual swerve module with angle optimization
     public void setRotationPower(SwerveModule module, double angle) {
-//        angle = angleOptimization(module, angle);
+        angle = angleOptimization(module, angle);
         module.setAngle(angle);
         double power = module.updatePID(module.getAngle());
         power = power * 12 / voltageSensor.getVoltage();

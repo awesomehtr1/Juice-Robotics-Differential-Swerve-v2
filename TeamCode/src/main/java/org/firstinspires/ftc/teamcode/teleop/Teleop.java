@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
+import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
 
 @TeleOp(name = "Teleop", group = "Teleop")
@@ -17,7 +18,7 @@ public class Teleop extends LinearOpMode {
         // teleop managers
         // DRIVER 1
         robot.createTeleOpManager(new TeleOpManagerBuilder() // intake
-                .typeToggle(()-> gamepad1.right_trigger > 0.1)
+                .typeToggle(()-> gamepad1.right_bumper)
                 .addAction(()-> robot.intake.on())
                 .addAction(()-> robot.intake.off())
                 .build());
@@ -30,35 +31,36 @@ public class Teleop extends LinearOpMode {
                 .typeTrigger(()-> gamepad1.dpad_up)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.high())
-                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.lift.delayAction(300))
                 .addAction(()-> robot.arm.high())
-                .addAction(()-> robot.arm.delayAction(200))
+                .addAction(()-> robot.arm.delayAction(300))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring mid
                 .typeTrigger(()-> gamepad1.dpad_left)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.mid())
-                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.lift.delayAction(300))
                 .addAction(()-> robot.arm.mid())
-                .addAction(()-> robot.arm.delayAction(200))
+                .addAction(()-> robot.arm.delayAction(300))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring low
                 .typeTrigger(()-> gamepad1.dpad_right)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.rest())
-                .addAction(()-> robot.lift.delayAction(200))
+                .addAction(()-> robot.lift.delayAction(300))
                 .addAction(()-> robot.arm.low())
-                .addAction(()-> robot.arm.delayAction(200))
+                .addAction(()-> robot.arm.delayAction(300))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // release cargo
                 .typeTrigger(()-> gamepad1.a)
-                .addAction(()-> robot.claw.intake())
+                .addAction(()-> robot.claw.deposit())
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // reset for intaking
                 .typeTrigger(()-> gamepad1.dpad_down)
-                .addAction(()-> robot.claw.intake())
                 .addAction(()-> robot.arm.intake())
                 .addAction(()-> robot.lift.rest())
+                .addAction(()-> robot.claw.intake())
+                .addAction(()-> robot.claw.delayAction(500))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // duck spinner
                 .typeToggle(()-> gamepad1.x)
@@ -69,12 +71,14 @@ public class Teleop extends LinearOpMode {
         // reset robot
         robot.lift.rest();
         robot.arm.intake();
-        robot.claw.intake();
+        robot.claw.grip();
         robot.update();
 
         waitForStart();
+        robot.claw.intake();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
+            robot.update();
             double rotation = gamepad1.right_stick_x;
             double strafe = gamepad1.left_stick_x;
             double forward = -gamepad1.left_stick_y;
