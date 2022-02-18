@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
@@ -8,6 +10,7 @@ import org.firstinspires.ftc.teamcode.auto.autocontrol.Drive;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 
+@Autonomous(name = "Remote Auto", group = "Auto")
 public class RemoteAuto extends LinearOpMode {
     Robot robot;
     Drive drive;
@@ -44,6 +47,7 @@ public class RemoteAuto extends LinearOpMode {
         }
         if(isStopRequested()) return;
         waitForStart();
+        vision.closeCamera();
 
         // AUTO CODE
         robot.claw.grip();
@@ -52,10 +56,13 @@ public class RemoteAuto extends LinearOpMode {
         robot.update();
 
         // scoring duck
-        drive.rotateTo(Math.toRadians(90));
+        drive.stopRotation();
+        timeout(1.25);
+        drive.startRotation();
+        drive.rotateTo(Math.toRadians(-90));
         timeout(2);
-        drive.forward(true, 1);
-        while(drive.isMoving());
+        drive.forward(true, 1.5);
+        runDrive();
         drive.stopDrive();
         robot.spinner.on();
         robot.update();
@@ -66,7 +73,7 @@ public class RemoteAuto extends LinearOpMode {
         drive.rotateTo(Math.toRadians(30));
         timeout(2);
         drive.forward(false, 3);
-        while(drive.isMoving());
+        runDrive();
         drive.stopDrive();
 
         // moving lift/arm to correct level
@@ -88,23 +95,33 @@ public class RemoteAuto extends LinearOpMode {
 
         // parking
         drive.strafe(true, 1);
-        while(drive.isMoving());
+        runDrive();
         robot.arm.intake();
         robot.lift.rest();
         robot.update();
         drive.rotateTo(Math.toRadians(90));
         timeout(2);
         drive.strafe(true, 2);
-        while(drive.isMoving());
-        drive.forward(false, 4);
-        while(drive.isMoving());
+        runDrive();
         drive.stopDrive();
+        drive.forward(false, 4);
+        runDrive();
+        drive.stopDrive();
+    }
+
+    public void runDrive() {
+        while(drive.isMoving() && opModeIsActive()) {
+            drive.update();
+        }
     }
 
     public void timeout(double seconds) {
         currentTime.reset();
-        this.time = time;
-        while(isTimedOut());
+        this.time = seconds;
+        while(isTimedOut() && opModeIsActive()){
+            robot.update();
+            drive.update();
+        }
     }
 
     public boolean isTimedOut() { return currentTime.seconds() < time; }

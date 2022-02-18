@@ -9,7 +9,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class Vision{
-    OpenCvCamera camera;
+    public OpenCvCamera camera;
     public VisionPipeline detector;
 
     public Vision(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -31,6 +31,16 @@ public class Vision{
             public void onOpened()
             {
                 camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+            public void onError(int errorCode) { }
+        });
+    }
+
+    public void closeCamera() {
+        camera.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+            @Override
+            public void onClose() {
+                closeCamera();
             }
             public void onError(int errorCode) { }
         });

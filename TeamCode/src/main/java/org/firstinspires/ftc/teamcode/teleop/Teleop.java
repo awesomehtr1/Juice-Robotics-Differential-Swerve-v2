@@ -28,7 +28,7 @@ public class Teleop extends LinearOpMode {
                 .addAction(()-> drive.setSlowmode(false))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring high
-                .typeTrigger(()-> gamepad1.dpad_up)
+                .typeTrigger(()-> gamepad1.left_bumper)
                 .addAction(()-> robot.claw.grip())
                 .addAction(()-> robot.lift.high())
                 .addAction(()-> robot.lift.delayAction(300))
@@ -51,16 +51,16 @@ public class Teleop extends LinearOpMode {
                 .addAction(()-> robot.arm.low())
                 .addAction(()-> robot.arm.delayAction(300))
                 .build());
-        robot.createTeleOpManager(new TeleOpManagerBuilder() // release cargo
-                .typeTrigger(()-> gamepad1.a)
-                .addAction(()-> robot.claw.deposit())
+        robot.createTeleOpManager(new TeleOpManagerBuilder() // release/grip cargo
+                .typeToggle(()-> gamepad1.a)
+                .addAction(()-> robot.claw.toggleGrip())
+                .addAction(()-> robot.claw.toggleGrip())
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // reset for intaking
                 .typeTrigger(()-> gamepad1.dpad_down)
+                .addAction(()-> robot.claw.timedRetract())
                 .addAction(()-> robot.arm.intake())
                 .addAction(()-> robot.lift.rest())
-                .addAction(()-> robot.claw.intake())
-                .addAction(()-> robot.claw.delayAction(500))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // duck spinner
                 .typeToggle(()-> gamepad1.x)

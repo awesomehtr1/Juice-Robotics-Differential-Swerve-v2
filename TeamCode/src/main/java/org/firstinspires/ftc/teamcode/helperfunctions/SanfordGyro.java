@@ -31,14 +31,13 @@ public class SanfordGyro {
     }
 
     public void update() {
-        angle = angleOut.getVoltage();
+        angle = angleOut.getVoltage() - startingVoltage;
         angle -= minVoltage;
         angle /= (maxVoltage - minVoltage);
         angle *= Math.PI * 2;
-        angle -= startingVoltage;
         angle = MathFunctions.angleWrap(angle);
-        if(bootup.milliseconds() >= 500 && measuringLoop) {
-            startingVoltage = angle;
+        if(bootup.milliseconds() >= 1000 && measuringLoop) {
+            startingVoltage = angleOut.getVoltage();
             measuringLoop = false;
         }
         lowPassFilter.update(angle);

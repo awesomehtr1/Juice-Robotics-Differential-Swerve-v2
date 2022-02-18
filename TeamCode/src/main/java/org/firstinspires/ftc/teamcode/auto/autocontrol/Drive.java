@@ -26,20 +26,22 @@ public class Drive {
     private double power;
     private double rotPower;
 
-    private boolean moving;
+    private boolean moving, rotate;
 
     private VoltageSensor voltageSensor;
 
     public Drive(Robot robot, HardwareMap hardwareMap) {
         swerveDrive = new SwerveDrive(hardwareMap);
+        swerveDrive.setSlowmode(false);
         this.robot = robot;
         gyro = new SanfordGyro(hardwareMap);
         currentTime = new ElapsedTime();
         time = 0.0;
         PIDtime = new ElapsedTime();
         rotationPID = new BasicPID(1.2, 0.25, 0.245, 0, PIDtime);
-        power = 0.5;
-        rotPower = 1.0;
+        rotationPID.setState(0);
+        power = 0.6;
+        rotPower = 0.8;
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
@@ -55,23 +57,27 @@ public class Drive {
         else
             moving = false;
 
-        rotation = rotation * 13.6 / voltageSensor.getVoltage();
-        strafe = strafe * 13.6 / voltageSensor.getVoltage();
-        forward = forward * 13.6 / voltageSensor.getVoltage();
-        swerveDrive.setMotorPowers(rotation, strafe, forward);
-        robot.update();
+        double voltageCompensation = 13.6 / voltageSensor.getVoltage();
+        if(!rotate)
+            rotation = 0;
+        swerveDrive.setMotorPowers(
+                rotation * voltageCompensation * 2,
+                strafe * voltageCompensation,
+                forward * voltageCompensation);
     }
 
     public void forward(boolean forward, double time) {
         currentTime.reset();
         this.time = time;
         this.forward = forward ? power : -power;
+        moving = true;
     }
 
     public void strafe(boolean right, double time) {
         currentTime.reset();
         this.time = time;
         strafe = right ? power : -power;
+        moving = true;
     }
 
     public void rotateTo(double angle) {
@@ -83,5 +89,14 @@ public class Drive {
 
     public boolean isMoving() { return moving; }
 
-    public void stopDrive() { swerveDrive.setMotorPowers(0, 0, 0); }
+    public void stopDrive() {
+        moving = false;
+        forward = 0;
+        strafe = 0;
+        update();
+    }
+
+    public void stopRotation() { rotate = false; }
+
+    public void startRotation() { rotate = true; }
 }
