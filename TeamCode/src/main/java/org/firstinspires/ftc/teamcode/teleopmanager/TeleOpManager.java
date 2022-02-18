@@ -12,7 +12,8 @@ public class TeleOpManager {
 
     public enum MODE {
         TOGGLE,
-        TRIGGER
+        TRIGGER,
+        FALLINGEDGE
     }
     public MODE mode;
 
@@ -29,6 +30,13 @@ public class TeleOpManager {
         this.trigger = trigger;
         actions = robotActions;
         mode = MODE.TRIGGER;
+    }
+
+    // falling edge constructor (1 boolean falling edge, list of actions)
+    public TeleOpManager(BooleanSupplier trigger, ArrayList<RobotAction> robotActions, boolean falling) {
+        this.trigger = trigger;
+        actions = robotActions;
+        mode = MODE.FALLINGEDGE;
     }
 
     // updates state and calls run()
@@ -56,6 +64,19 @@ public class TeleOpManager {
                 action.run();
             else
                 action2.run();
+        }
+
+        // falling edge mode
+        else if(mode == MODE.FALLINGEDGE) {
+            if(trigger.getAsBoolean()) {
+                if(!prevState) {
+                    for (RobotAction action : actions)
+                        action.run();
+                }
+                prevState = true;
+            }
+            else
+                prevState = false;
         }
     }
 }

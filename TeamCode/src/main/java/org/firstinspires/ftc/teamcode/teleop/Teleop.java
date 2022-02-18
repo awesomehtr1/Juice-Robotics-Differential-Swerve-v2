@@ -52,7 +52,7 @@ public class Teleop extends LinearOpMode {
                 .addAction(()-> robot.arm.delayAction(300))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // release/grip cargo
-                .typeTrigger(()-> gamepad1.a)
+                .typeFallingEdge(()-> gamepad1.a)
                 .addAction(()-> robot.claw.toggleGrip())
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // reset for intaking
