@@ -24,7 +24,7 @@ public class AS5600Calibration extends LinearOpMode {
     public static double a;
     public static double power;
     public void runOpMode() throws InterruptedException {
-        AS5600 as5600 = new AS5600(hardwareMap, "RFanalog", 2.523);
+        AS5600 as5600 = new AS5600(hardwareMap, "LFanalog", 2.523);
         DcMotorEx rot = hardwareMap.get(DcMotorEx.class, "RFrot");
         rot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

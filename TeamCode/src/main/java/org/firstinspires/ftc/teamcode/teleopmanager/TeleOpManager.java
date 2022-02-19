@@ -13,7 +13,8 @@ public class TeleOpManager {
     public enum MODE {
         TOGGLE,
         TRIGGER,
-        FALLINGEDGE
+        FALLINGEDGE,
+        HOLD
     }
     public MODE mode;
 
@@ -37,6 +38,14 @@ public class TeleOpManager {
         this.trigger = trigger;
         actions = robotActions;
         mode = MODE.FALLINGEDGE;
+    }
+
+    // hold constructor (1 boolean hold, 2 actions)
+    public TeleOpManager(BooleanSupplier trigger, RobotAction action1, RobotAction action2, boolean hold) {
+        this.trigger = trigger;
+        this.action = action;
+        this.action2 = action2;
+        mode = MODE.HOLD;
     }
 
     // updates state and calls run()
@@ -77,6 +86,11 @@ public class TeleOpManager {
             }
             else
                 prevState = false;
+        }
+
+        // hold mode
+        else if(mode == MODE.HOLD) {
+            (trigger.getAsBoolean() ? action : action2).run();
         }
     }
 }

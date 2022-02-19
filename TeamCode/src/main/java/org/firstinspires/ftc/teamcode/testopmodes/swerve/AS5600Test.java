@@ -4,13 +4,15 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 
 @TeleOp(name = "Analog Encoder Test", group = "TestOpModes")
 public class AS5600Test extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
-        AS5600 as5600 = new AS5600(hardwareMap, "analogtest", 3.258);
+        AS5600 as5600 = new AS5600(hardwareMap, "LBanalog", 2.940);
+        DcMotor RFrot = hardwareMap.get(DcMotor.class, "RFrot");
         TelemetryPacket packet = new TelemetryPacket();
         FtcDashboard dashboard = FtcDashboard.getInstance();
         double minVoltage = 3.0;
@@ -19,6 +21,7 @@ public class AS5600Test extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
+            RFrot.setPower(0.0);
             double voltage = as5600.getVoltage();
             if(startingVoltage == 0.0)
                 startingVoltage = voltage;

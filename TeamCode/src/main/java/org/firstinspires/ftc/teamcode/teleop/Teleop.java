@@ -14,6 +14,8 @@ public class Teleop extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
         SwerveDrive drive = new SwerveDrive(hardwareMap);
+        drive.setBrake();
+        robot.spinner.setPower(-1);
 
         // teleop managers
         // DRIVER 1
@@ -22,6 +24,11 @@ public class Teleop extends LinearOpMode {
                 .addAction(()-> robot.intake.on())
                 .addAction(()-> robot.intake.off())
                 .build());
+//        robot.createTeleOpManager(new TeleOpManagerBuilder()
+//                .typeHold(()-> gamepad1.right_trigger > 0.1)
+//                .addAction(()-> robot.intake.changePower(1))
+//                .addAction(()-> robot.intake.changePower(-1))
+//                .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // slowmode
                 .typeToggle(()-> gamepad1.left_trigger > 0.1)
                 .addAction(()-> drive.setSlowmode(true))

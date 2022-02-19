@@ -29,13 +29,14 @@ public class RemoteAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, gamepad1, gamepad2);
-        drive = new Drive(robot, hardwareMap);
+        drive = new Drive(robot, hardwareMap, telemetry);
         vision = new Vision(hardwareMap, telemetry);
         vision.setPipeline();
         vision.startStreaming();
 
         currentTime = new ElapsedTime();
 
+        // run vision and update enum
         while(!opModeIsActive() && !isStopRequested()) {
             VisionPipeline.POS pos = vision.getPosition();
             if(pos == VisionPipeline.POS.RIGHT)
@@ -55,26 +56,15 @@ public class RemoteAuto extends LinearOpMode {
         robot.arm.intake();
         robot.update();
 
-        // scoring duck
-        drive.stopRotation();
-        timeout(1.25);
-        drive.startRotation();
-        drive.rotateTo(Math.toRadians(-90));
-        timeout(2);
-        drive.forward(true, 1.5);
-        runDrive();
-        drive.stopDrive();
-        robot.spinner.on();
-        robot.update();
-        robot.spinner.off();
-        robot.update();
+        drive.rotateTo(0);
 
-        // scoring preload
-        drive.rotateTo(Math.toRadians(30));
-        timeout(2);
-        drive.forward(false, 3);
+        // move away from wall
+        drive.forward(false, 0.25);
         runDrive();
-        drive.stopDrive();
+
+        // strafe to score preload
+        drive.strafe(true, 1.56);
+        runDrive();
 
         // moving lift/arm to correct level
         if(level == LEVEL.LOW)
@@ -87,32 +77,112 @@ public class RemoteAuto extends LinearOpMode {
             robot.arm.high();
             robot.lift.high();
         }
-        robot.update();
 
-        timeout(1);
-        robot.claw.intake();
-        robot.update();
-
-        // parking
-        drive.strafe(true, 1);
+        // driving backwards to score preload
+        drive.forward(false, 1.28);
         runDrive();
+
+        timeout(0.25);
+        robot.claw.deposit();
+        timeout(0.25);
+
+        // get out of the way of the hub
+        drive.forward(true, 0.4);
+        runDrive();
+
+        // reset
+        robot.claw.timedRetract();
         robot.arm.intake();
         robot.lift.rest();
-        robot.update();
+        timeout(0.5);
+
+        // driving to intake duck
+        robot.intake.on();
+        drive.rotateTo(Math.toRadians(102.5));
+        timeout(0.5);
+        timeout(1.0);
+        drive.setPower(0.4);
+        drive.forward(true,1.1);
+        runDrive();
         drive.rotateTo(Math.toRadians(90));
-        timeout(2);
-        drive.strafe(true, 2);
+        timeout(0.5);
+        drive.setPower(0.25);
+        drive.forward(true, 0.75);
         runDrive();
-        drive.stopDrive();
-        drive.forward(false, 4);
+
+        // scoring duck
+        robot.intake.off();
+        drive.setPower(0.3);
+        drive.strafe(true, 1);
         runDrive();
-        drive.stopDrive();
+
+        robot.claw.grip();
+        timeout(0.5);
+        robot.arm.high();
+        robot.lift.high();
+        timeout(0.5);
+        drive.forward(false, 0.65);
+        runDrive();
+
+        timeout(0.25);
+        robot.claw.deposit();
+        timeout(0.25);
+
+        // reset
+        robot.claw.timedRetract();
+        robot.arm.intake();
+        robot.lift.rest();
+
+        // warehouse intake cycle
+        drive.setStrafePower(0.5);
+        drive.strafe(false, 2.25);
+        runDrive();
+        drive.setStrafePower(0.3);
+        robot.intake.on();
+        drive.setPower(0.55);
+        drive.forward(true,1.5);
+        runDrive();
+        timeout(0.5);
+
+        // move to cycle cargo
+        robot.intake.reverse();
+        robot.claw.grip();
+        drive.forward(false, 0.65);
+        runDrive();
+        drive.strafe(false, 0.6);
+        runDrive();
+        drive.forward(false, 0.85);
+        runDrive();
+        drive.strafe(true, 2.2);
+        runDrive();
+
+        // scoring cargo
+        robot.intake.off();
+        robot.arm.high();
+        robot.lift.high();
+        timeout(1.0);
+        robot.claw.deposit();
+        timeout(0.5);
+
+        // reset
+        robot.claw.timedRetract();
+        robot.arm.intake();
+        robot.lift.rest();
+
+        // park
+        drive.setStrafePower(0.6);
+        drive.strafe(false, 2);
+        runDrive();
+        drive.forward(true,1.2);
+        runDrive();
     }
 
     public void runDrive() {
         while(drive.isMoving() && opModeIsActive()) {
             drive.update();
+            robot.update();
         }
+        drive.stopDrive();
     }
 
     public void timeout(double seconds) {
@@ -122,6 +192,7 @@ public class RemoteAuto extends LinearOpMode {
             robot.update();
             drive.update();
         }
+        drive.turnOnCorrection();
     }
 
     public boolean isTimedOut() { return currentTime.seconds() < time; }

@@ -68,15 +68,15 @@ public class SwerveDrive {
         LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
         RBrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.523);
-        LFas5600 = new AS5600(hardwareMap, "LFanalog", 0.133);
-        LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.258);
-        RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.940);
+        RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.619); //2.523 alt encoder
+        LFas5600 = new AS5600(hardwareMap, "LFanalog", 0.125);
+        LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.245);
+        RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.969);
 
-        RFPID = new SwerveRotationPID(0.6, 0.015, 0.008, 0.04, RFtime);
-        LFPID = new SwerveRotationPID(0.65, 0.015, 0.0065, 0.03, LFtime);
-        LBPID = new SwerveRotationPID(0.7, 0.01, 0.005, 0.04, LBtime);
-        RBPID = new SwerveRotationPID(1.0, 0.015, 0.001, 0.06, RBtime);
+        RFPID = new SwerveRotationPID(0.7, 0.0, 0.013, 0.03, RFtime);
+        LFPID = new SwerveRotationPID(0.67, 0.0, 0.013, 0.02, LFtime);
+        LBPID = new SwerveRotationPID(0.7, 0.0, 0.01, 0.05, LBtime);
+        RBPID = new SwerveRotationPID(0.7, 0.0, 0.006, 0.04, RBtime);
 
         RF = new SwerveModule(RFrot, RFdrive, RFPID, RFas5600);
         LF = new SwerveModule(LFrot, LFdrive, LFPID, LFas5600);
@@ -116,14 +116,12 @@ public class SwerveDrive {
         angle = angleOptimization(module, angle);
         module.setAngle(angle);
         double power = module.updatePID(module.getAngle());
-        power = power * 12 / voltageSensor.getVoltage();
-        module.setRot(power);
+        double voltageCompensation = 13.2 / voltageSensor.getVoltage();
+        module.setRot(power * voltageCompensation);
     }
 
     public void setDrivePower(SwerveModule module, double power) {
         module.setDrive(power);
-//        TODO: module.setDrive(power - compensateRotation(module));
-
     }
 
     // make pod rotate no more than 90 degrees
@@ -161,4 +159,9 @@ public class SwerveDrive {
     }
 
     public void setSlowmode(boolean slowmode) { drivePower = slowmode ? 0.3 : 1.0; }
+
+    public void setBrake() {
+        for(SwerveModule module : swerveModules)
+            module.setBrake();
+    }
 }

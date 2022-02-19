@@ -13,17 +13,17 @@ public class TestVisionPipeline extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
 
-    static final Rect LEFTBOX = new Rect(
-            new Point(0, 40),
-            new Point(106, 140)
+    public static Rect LEFTBOX = new Rect(
+            new Point(10, 20),
+            new Point(90, 100)
     );
-    static final Rect CENTERBOX = new Rect(
-            new Point(106, 40),
-            new Point(212, 140)
+    public static Rect CENTERBOX = new Rect(
+            new Point(130, 20),
+            new Point(210, 100)
     );
-    static final Rect RIGHTBOX = new Rect(
-            new Point(212, 40),
-            new Point(320, 140)
+    public static Rect RIGHTBOX = new Rect(
+            new Point(220, 20),
+            new Point(280, 100)
     );
 
     public enum POS {
@@ -33,20 +33,15 @@ public class TestVisionPipeline extends OpenCvPipeline {
     }
     private POS pos;
 
+    public Scalar lowHSV = new Scalar(150, 50, 50);
+    public Scalar highHSV = new Scalar(180, 255, 255);
+
     public TestVisionPipeline(Telemetry t) {
         telemetry = t;
     }
 
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(25, 50, 70);
-        Scalar highHSV = new Scalar(28, 255, 255);
-
-        Scalar lowHSVGreen = new Scalar(35, 50, 70); // green test lower
-        Scalar highHSVGreen = new Scalar(70, 255, 255); // green test upper
-
-        Scalar lowHSVPurple = new Scalar(110, 50, 70); // purple test lower
-        Scalar highHSVPurple = new Scalar(145, 255, 255); // purple test upper
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 

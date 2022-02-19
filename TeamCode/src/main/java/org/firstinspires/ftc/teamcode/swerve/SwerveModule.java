@@ -59,4 +59,6 @@ public class SwerveModule {
     public double getRotPower() { return rotPower; }
 
     public double getTargetAngle() { return targetAngle; }
+
+    public void setBrake() { drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); }
 }

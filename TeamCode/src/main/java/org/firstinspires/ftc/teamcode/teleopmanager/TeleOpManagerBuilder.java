@@ -12,7 +12,8 @@ public class TeleOpManagerBuilder {
     private enum MODE {
         TOGGLE,
         TRIGGER,
-        FALLINGEDGE
+        FALLINGEDGE,
+        HOLD
     }
     private MODE mode;
 
@@ -37,6 +38,13 @@ public class TeleOpManagerBuilder {
         return this;
     }
 
+    public TeleOpManagerBuilder typeHold(BooleanSupplier trigger) {
+        actions = new ArrayList<RobotAction>();
+        this.trigger = trigger;
+        mode = MODE.HOLD;
+        return this;
+    }
+
     public TeleOpManagerBuilder addAction(RobotAction action) {
         actions.add(action);
         return this;
@@ -50,6 +58,8 @@ public class TeleOpManagerBuilder {
             manager = new TeleOpManager(trigger, actions.get(0), actions.get(1));
         else if(mode == MODE.FALLINGEDGE)
             manager = new TeleOpManager(trigger, actions, true);
+        else if(mode == MODE.HOLD)
+            manager = new TeleOpManager(trigger, actions.get(0), actions.get(1), true);
         return manager;
     }
 }

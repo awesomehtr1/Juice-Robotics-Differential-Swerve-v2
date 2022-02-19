@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.BasicPID;
 import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
@@ -15,39 +16,50 @@ public class Drive {
 
     private Robot robot;
 
-    private ElapsedTime currentTime, PIDtime;
+    private ElapsedTime currentTime, PIDtime, correctionPIDtime;
     private double time;
 
     private double rotation, strafe, forward;
     private double angle;
 
-    private BasicPID rotationPID;
+    private BasicPID rotationPID, correctionPID;
 
-    private double power;
-    private double rotPower;
+    private double power, rotPower, strafePower;
 
-    private boolean moving, rotate;
+    private boolean moving, rotate, correction;
 
     private VoltageSensor voltageSensor;
+    Telemetry telemetry;
 
-    public Drive(Robot robot, HardwareMap hardwareMap) {
+    public Drive(Robot robot, HardwareMap hardwareMap, Telemetry telemetry) {
         swerveDrive = new SwerveDrive(hardwareMap);
         swerveDrive.setSlowmode(false);
+        swerveDrive.setBrake();
         this.robot = robot;
         gyro = new SanfordGyro(hardwareMap);
         currentTime = new ElapsedTime();
         time = 0.0;
         PIDtime = new ElapsedTime();
-        rotationPID = new BasicPID(1.2, 0.25, 0.245, 0, PIDtime);
+        correctionPIDtime = new ElapsedTime();
+        rotationPID = new BasicPID(0.72, 0.06, 0.08, 0.0, PIDtime);
+        correctionPID = new BasicPID(1.8, 0.0, 0.17,0, correctionPIDtime);
         rotationPID.setState(0);
-        power = 0.6;
-        rotPower = 0.8;
+        power = 0.3;
+        strafePower = 0.3;
+        rotPower = 1.0;
+        rotate = true;
+        correction = true;
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        this.telemetry = telemetry;
     }
 
     public void update() {
-        rotation = rotationPID.updatePID(getAngle()) * rotPower;
+        double gyroAngle = getAngle();
+        if(correction)
+            rotation = correctionPID.updatePID(gyroAngle) * rotPower;
+        else
+            rotation = rotationPID.updatePID(gyroAngle) * rotPower;
         if(currentTime.seconds() >= time) {
             forward = 0;
             strafe = 0;
@@ -61,9 +73,11 @@ public class Drive {
         if(!rotate)
             rotation = 0;
         swerveDrive.setMotorPowers(
-                rotation * voltageCompensation * 2,
+                rotation,
                 strafe * voltageCompensation,
                 forward * voltageCompensation);
+
+        telemetry.addData("voltage: ", voltageSensor.getVoltage());
     }
 
     public void forward(boolean forward, double time) {
@@ -76,14 +90,20 @@ public class Drive {
     public void strafe(boolean right, double time) {
         currentTime.reset();
         this.time = time;
-        strafe = right ? power : -power;
+        strafe = right ? strafePower : -strafePower;
         moving = true;
     }
 
     public void rotateTo(double angle) {
+        correction = false;
         this.angle = angle;
         rotationPID.setState(angle);
+        correctionPID.setState(angle);
     }
+
+    public void setPower(double power) { this.power = power; }
+
+    public void setStrafePower(double power) { strafePower = power; }
 
     public double getAngle() { return gyro.getLowPassEstimate(); }
 
@@ -99,4 +119,6 @@ public class Drive {
     public void stopRotation() { rotate = false; }
 
     public void startRotation() { rotate = true; }
+
+    public void turnOnCorrection() { correction = true; }
 }

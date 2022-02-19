@@ -13,18 +13,21 @@ public class VisionPipeline extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
 
-    static final Rect LEFTBOX = new Rect(
-            new Point(0, 40),
-            new Point(106, 140)
+    public static Rect LEFTBOX = new Rect(
+            new Point(5, 30),
+            new Point(90, 100)
     );
-    static final Rect CENTERBOX = new Rect(
-            new Point(106, 40),
-            new Point(212, 140)
+    public static Rect CENTERBOX = new Rect(
+            new Point(115, 30),
+            new Point(195, 100)
     );
-    static final Rect RIGHTBOX = new Rect(
-            new Point(212, 40),
-            new Point(320, 140)
+    public static Rect RIGHTBOX = new Rect(
+            new Point(220, 30),
+            new Point(305, 100)
     );
+
+    public Scalar lowHSV = new Scalar(150, 50, 50);
+    public Scalar highHSV = new Scalar(180, 255, 255);
 
     public enum POS {
         LEFT,
@@ -40,11 +43,6 @@ public class VisionPipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         // convert RBB to HSV
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(23, 50, 70); // duck lower
-        Scalar highHSV = new Scalar(32, 255, 255); // duck upper
-
-        Scalar lowHSVGreen = new Scalar(35, 50, 70); // green test lower
-        Scalar highHSVGreen = new Scalar(70, 255, 255); // green test upper
 
         // convert to b/w by removing all colors not in range
         Core.inRange(mat, lowHSV, highHSV, mat);
@@ -68,11 +66,11 @@ public class VisionPipeline extends OpenCvPipeline {
         double max = Math.max(maxLeftRight, centerValue);
 
         if (max == leftValue)
-           pos = POS.LEFT;
+           pos = POS.RIGHT; // swapped bc camera upside down
         else if (max == centerValue)
             pos = POS.CENTER;
         else if (max == rightValue)
-            pos = POS.RIGHT;
+            pos = POS.LEFT; // swapped bc camera upside down
 
         telemetry.addData("Vision target location: ", pos);
         telemetry.update();

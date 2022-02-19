@@ -20,6 +20,7 @@ public class DriveRotationPIDTuner extends LinearOpMode {
     SanfordGyro gyro;
 
     public static double kP, kI, kD, kS;
+    public static double angle;
     ElapsedTime time, movementTimer;
 
     VoltageSensor voltageSensor;
@@ -32,12 +33,14 @@ public class DriveRotationPIDTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SwerveDrive(hardwareMap);
+        drive.setSlowmode(false);
         time = new ElapsedTime();
         movementTimer = new ElapsedTime();
         pid = new BasicPID(kP, kI, kD, kS, time);
         gyro = new SanfordGyro(hardwareMap);
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         target = 0;
+        angle = 0;
 
         waitForStart();
         while(opModeIsActive()) {
@@ -47,7 +50,7 @@ public class DriveRotationPIDTuner extends LinearOpMode {
             pid.kS = kS;
 
             if (movementTimer.seconds() < 1.5) {
-                target = Math.PI / 2;
+                target = angle;
             }
             else if (movementTimer.seconds() >= 1.5 && movementTimer.seconds() < 3) {
                 target = 0;
@@ -57,9 +60,9 @@ public class DriveRotationPIDTuner extends LinearOpMode {
             pid.setState(target);
 
             double power = pid.updatePID(gyro.getLowPassEstimate());
-            power = power * 13.6 / voltageSensor.getVoltage();
+            double voltageCompensation = 13.6 / voltageSensor.getVoltage();
 
-            drive.setMotorPowers(power, 0, 0);
+            drive.setMotorPowers(power * voltageCompensation, 0, 0);
 
             packet.put("starting voltage", gyro.startingVoltage);
             packet.put("set state", target);

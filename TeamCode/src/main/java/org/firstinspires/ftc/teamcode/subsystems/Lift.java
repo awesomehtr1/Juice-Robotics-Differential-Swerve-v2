@@ -10,7 +10,7 @@ public class Lift implements Subsystem{
     Servo R1, R2, L1, L2;
     final double rest = 0.0;
     final double mid = 0.25;
-    final double high = 0.6;
+    final double high = 0.64;
 
     boolean move;
     double delay;

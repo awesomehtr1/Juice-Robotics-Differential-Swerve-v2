@@ -62,7 +62,7 @@ public class SwerveModulePIDTuner extends LinearOpMode {
                     else if (time.seconds() >= 1.5)
                         time.reset();
                     double power = module.updatePID(angle);
-                    power = power * 12 / voltageSensor.getVoltage();
+                    power = power * 13.2 / voltageSensor.getVoltage();
                     module.setRot(power);
                 }
             }

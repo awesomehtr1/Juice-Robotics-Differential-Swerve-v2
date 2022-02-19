@@ -14,7 +14,7 @@ public class SanfordGyro {
     private double maxVoltage = 3.293;
 
     public LowPassFilter lowPassFilter;
-    public double a = 0.8;
+    public double a = 0.1;
 
     public double startingVoltage;
     boolean measuringLoop = true;
@@ -40,7 +40,8 @@ public class SanfordGyro {
             startingVoltage = angleOut.getVoltage();
             measuringLoop = false;
         }
-        lowPassFilter.update(angle);
+        if(bootup.milliseconds() >= 1000)
+            lowPassFilter.update(angle);
     }
 
     public double getAngle(){
