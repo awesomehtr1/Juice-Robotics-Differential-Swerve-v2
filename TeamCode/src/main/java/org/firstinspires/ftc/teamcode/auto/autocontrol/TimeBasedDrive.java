@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.helperfunctions.PID.BasicPID;
 import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
 import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 
-public class Drive {
+public class TimeBasedDrive {
     private SwerveDrive swerveDrive;
     private SanfordGyro gyro;
 
@@ -31,7 +31,7 @@ public class Drive {
     private VoltageSensor voltageSensor;
     Telemetry telemetry;
 
-    public Drive(Robot robot, HardwareMap hardwareMap, Telemetry telemetry) {
+    public TimeBasedDrive(Robot robot, HardwareMap hardwareMap, Telemetry telemetry) {
         swerveDrive = new SwerveDrive(hardwareMap);
         swerveDrive.setSlowmode(false);
         swerveDrive.setBrake();

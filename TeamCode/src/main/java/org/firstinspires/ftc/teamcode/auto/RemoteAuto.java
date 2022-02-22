@@ -2,18 +2,17 @@ package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.auto.autocontrol.Drive;
+import org.firstinspires.ftc.teamcode.auto.autocontrol.TimeBasedDrive;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 
 @Autonomous(name = "Remote Auto", group = "Auto")
 public class RemoteAuto extends LinearOpMode {
     Robot robot;
-    Drive drive;
+    TimeBasedDrive drive;
     Vision vision;
 
     ElapsedTime currentTime;
@@ -29,7 +28,7 @@ public class RemoteAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, gamepad1, gamepad2);
-        drive = new Drive(robot, hardwareMap, telemetry);
+        drive = new TimeBasedDrive(robot, hardwareMap, telemetry);
         vision = new Vision(hardwareMap, telemetry);
         vision.setPipeline();
         vision.startStreaming();
@@ -98,7 +97,7 @@ public class RemoteAuto extends LinearOpMode {
 
         // driving to intake duck
         robot.intake.on();
-        drive.rotateTo(Math.toRadians(102.5));
+        drive.rotateTo(Math.toRadians(104));
         timeout(0.5);
         timeout(1.0);
         drive.setPower(0.4);

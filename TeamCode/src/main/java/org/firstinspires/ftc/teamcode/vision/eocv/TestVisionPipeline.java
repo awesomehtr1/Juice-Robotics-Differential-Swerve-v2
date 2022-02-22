@@ -14,17 +14,20 @@ public class TestVisionPipeline extends OpenCvPipeline {
     Mat mat = new Mat();
 
     public static Rect LEFTBOX = new Rect(
-            new Point(10, 20),
+            new Point(5, 10),
             new Point(90, 100)
     );
     public static Rect CENTERBOX = new Rect(
-            new Point(130, 20),
-            new Point(210, 100)
+            new Point(115, 10),
+            new Point(195, 100)
     );
     public static Rect RIGHTBOX = new Rect(
-            new Point(220, 20),
-            new Point(280, 100)
+            new Point(220, 10),
+            new Point(305, 100)
     );
+
+    public Scalar lowHSV = new Scalar(150, 50, 50);
+    public Scalar highHSV = new Scalar(180, 255, 255);
 
     public enum POS {
         LEFT,
@@ -32,9 +35,6 @@ public class TestVisionPipeline extends OpenCvPipeline {
         CENTER
     }
     private POS pos;
-
-    public Scalar lowHSV = new Scalar(150, 50, 50);
-    public Scalar highHSV = new Scalar(180, 255, 255);
 
     public TestVisionPipeline(Telemetry t) {
         telemetry = t;
