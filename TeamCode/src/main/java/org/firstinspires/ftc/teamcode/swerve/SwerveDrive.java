@@ -51,10 +51,7 @@ public class SwerveDrive {
         LBdrive = hardwareMap.get(DcMotor.class, "LB");
         RBdrive = hardwareMap.get(DcMotor.class, "RB");
 
-        //TODO: reverse drive motors if needed
         RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         RBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         RFrot = hardwareMap.get(DcMotor.class, "RFrot");
@@ -62,7 +59,6 @@ public class SwerveDrive {
         LBrot = hardwareMap.get(DcMotor.class, "LBrot");
         RBrot = hardwareMap.get(DcMotor.class, "RBrot");
 
-        //TODO: reverse rot motors if needed
         RFrot.setDirection(DcMotorSimple.Direction.REVERSE);
         LFrot.setDirection(DcMotorSimple.Direction.REVERSE);
         LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
