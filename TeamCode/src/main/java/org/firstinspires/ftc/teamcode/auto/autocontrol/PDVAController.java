@@ -56,7 +56,7 @@ public class PDVAController {
         double P = error * kP;
 
         // compute D
-        double deltaTime = (currentTime - prevTime) / 1000;
+        double deltaTime = (currentTime - prevTime);
         double deltaError = error - prevError;
         double D = deltaError / deltaTime * kD;
 
