@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -10,14 +11,17 @@ import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
+import java.util.Arrays;
+
 // high level swerve drive class which utilizes gamepad controls to control the swerve modules
 // wraps SwerveKinematics controls and implements SwerveModule
 public class SwerveDrive {
     public SwerveKinematics swerveKinematics;
+    public SwerveOdometry swerveOdometry;
 
     private HardwareMap hardwareMap;
 
-    private DcMotor RFdrive, LFdrive, LBdrive, RBdrive;
+    private DcMotorEx RFdrive, LFdrive, LBdrive, RBdrive;
     private DcMotor RFrot, LFrot, LBrot, RBrot;
 
     // pid constants
@@ -42,14 +46,18 @@ public class SwerveDrive {
         swerveKinematics.setTrackwidth(SwerveConstants.trackwidth);
         swerveKinematics.setWheelbase(SwerveConstants.wheelbase);
 
+        swerveOdometry = new SwerveOdometry();
+        swerveOdometry.setTrackwidth(SwerveConstants.trackwidth);
+        swerveOdometry.setWheelbase(SwerveConstants.wheelbase);
+
         this.hardwareMap = hardwareMap;
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        RFdrive = hardwareMap.get(DcMotor.class, "RF");
-        LFdrive = hardwareMap.get(DcMotor.class, "LF");
-        LBdrive = hardwareMap.get(DcMotor.class, "LB");
-        RBdrive = hardwareMap.get(DcMotor.class, "RB");
+        RFdrive = hardwareMap.get(DcMotorEx.class, "RF");
+        LFdrive = hardwareMap.get(DcMotorEx.class, "LF");
+        LBdrive = hardwareMap.get(DcMotorEx.class, "LB");
+        RBdrive = hardwareMap.get(DcMotorEx.class, "RB");
 
         RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         RBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -154,7 +162,38 @@ public class SwerveDrive {
             setDrivePower(swerveModules[i], drivePowerArray[i]);
     }
 
-    public void setSlowmode(boolean slowmode) { drivePower = slowmode ? 0.3 : 1.0; }
+    public void updatePose(double heading, double elapsedTime) {
+        double[] wheelVelocities = getWheelVelocities(elapsedTime);
+        double[] moduleOrientations = getModuleOrientations();
+        swerveOdometry.updatePose(wheelVelocities, moduleOrientations, heading, elapsedTime);
+    }
+
+    public double getX() { return swerveOdometry.getX(); }
+    public double getY() { return swerveOdometry.getY(); }
+    public double getHeading() { return swerveOdometry.getHeading(); }
+
+    public double[] getWheelVelocities(double elapsedTime) {
+        double[] wheelVelocities = new double[4];
+        for(int i = 0; i < 4; i++)
+            wheelVelocities[i] = swerveModules[i].getWheelVelocity(elapsedTime);
+        return wheelVelocities;
+    }
+
+    public double[] getModuleOrientations() {
+        double[] moduleOrientations = new double[4];
+        for(int i = 0; i < 4; i++)
+            moduleOrientations[i] = swerveModules[i].getAngle();
+        return moduleOrientations;
+    }
+
+    // set/reset pose
+    public void setPose(double x, double y) {
+        swerveOdometry.setPose(x, y);
+    }
+
+    public void setSlowmode(boolean slowmode) {
+        drivePower = slowmode ? 0.3 : 1.0;
+    }
 
     public void setBrake() {
         for(SwerveModule module : swerveModules)

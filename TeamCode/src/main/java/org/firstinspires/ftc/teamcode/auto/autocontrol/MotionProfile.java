@@ -4,6 +4,7 @@ public class MotionProfile {
     private double maxVelo, maxAccel;
     private double targetVelo, targetAccel;
     private double veloMargin, positionMargin;
+    private double prevVelo;
 
     private enum ACCELSTATE {
         ACCELERATING,
@@ -25,6 +26,7 @@ public class MotionProfile {
         this.veloMargin = veloMargin;
         this.positionMargin = positionMargin;
         accelstate = ACCELSTATE.ACCELERATING;
+        prevVelo = 0;
     }
 
     /**
@@ -32,9 +34,10 @@ public class MotionProfile {
      * @param currentVelo current measured velocity
      * @param targetDistance distance to target pose
      * @param endVelo desired velocity to reach pose at
+     * @param deltaTime elapsed time since last update
      * @return double[] velocity, acceleration
      */
-    public double[] update(double currentVelo, double targetDistance, double endVelo) {
+    public double[] update(double currentVelo, double targetDistance, double endVelo, double deltaTime) {
         double[] veloAccelState = new double[2];
 
         // check if robot has to start decelerating
@@ -57,11 +60,11 @@ public class MotionProfile {
         switch (accelstate) {
             case ACCELERATING:
                 targetAccel = maxAccel;
-                targetVelo = currentVelo;
+                targetVelo = prevVelo + (deltaTime * maxAccel);
                 break;
             case STEADY:
-                targetVelo = maxVelo;
                 targetAccel = 0;
+                targetVelo = maxVelo;
                 break;
             case DECELERATING:
                 targetAccel = -maxAccel;
@@ -74,6 +77,8 @@ public class MotionProfile {
             targetVelo = 0;
             targetAccel = 0;
         }
+
+        prevVelo = targetVelo;
 
         // velocity, acceleration format
         veloAccelState[0] = targetVelo;
@@ -88,4 +93,8 @@ public class MotionProfile {
     public boolean isRobotAtTarget(double distance) {
         return Math.abs(distance) < positionMargin;
     }
+
+    public double getTargetVelo() { return targetVelo; }
+
+    public double getTargetAccel() { return targetAccel; }
 }

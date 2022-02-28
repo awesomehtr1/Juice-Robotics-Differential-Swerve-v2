@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
@@ -8,7 +9,7 @@ import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
 public class SwerveModule {
     private DcMotor rot;
-    private DcMotor drive;
+    private DcMotorEx drive;
     public SwerveRotationPID pid;
     private AS5600 as5600;
     private boolean reverseDrive = false;
@@ -16,14 +17,17 @@ public class SwerveModule {
     private double targetAngle;
     private double rotPower;
 
+    private double prevDrivePos;
+
     // swerve module wrapper for storing drive motor, rotation motor, rotation pid, and analog encoder
     // includes getter and setters
     // handles some low level swerve control
-    public SwerveModule(DcMotor rot, DcMotor drive, SwerveRotationPID pid, AS5600 as5600) {
+    public SwerveModule(DcMotor rot, DcMotorEx drive, SwerveRotationPID pid, AS5600 as5600) {
         this.rot = rot;
         this.drive = drive;
         this.pid = pid;
         this.as5600 = as5600;
+        prevDrivePos = 0;
     }
 
     // sets PID target angle
@@ -34,6 +38,15 @@ public class SwerveModule {
 
     // returns analog encoder angle; returns -pi to pi radian format
     public double getAngle() { return as5600.getLowPassEstimate(); }
+
+    // returns velocity of drive wheel
+    public double getWheelVelocity(double elapsedTime) {
+        double currentPos = drive.getCurrentPosition();
+        double delta = currentPos - prevDrivePos;
+        double velocity = delta / elapsedTime;
+        prevDrivePos = currentPos;
+        return velocity;
+    }
 
     // updates PID with current angle; returns power
     public double updatePID(double pos) { return pid.updatePID(pos); }

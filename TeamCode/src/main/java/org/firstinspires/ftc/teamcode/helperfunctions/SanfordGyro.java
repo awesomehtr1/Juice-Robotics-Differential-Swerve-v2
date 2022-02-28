@@ -36,7 +36,7 @@ public class SanfordGyro {
         angle /= (maxVoltage - minVoltage);
         angle *= Math.PI * 2;
         angle = MathFunctions.angleWrap(angle);
-        if(bootup.milliseconds() >= 1000 && measuringLoop) {
+        if(bootup.milliseconds() >= 1000 && measuringLoop && Math.abs(angleOut.getVoltage()) > 0.05) {
             startingVoltage = angleOut.getVoltage();
             measuringLoop = false;
         }
