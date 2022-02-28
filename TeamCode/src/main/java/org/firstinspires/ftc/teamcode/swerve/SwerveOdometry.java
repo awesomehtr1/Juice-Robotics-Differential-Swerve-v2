@@ -1,5 +1,14 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
+import com.sun.tools.javac.parser.LazyDocCommentTable;
+
+import org.apache.commons.math3.analysis.function.Sin;
+import org.ejml.data.DMatrix;
+import org.ejml.data.DMatrix3;
+import org.ejml.data.DMatrix3x3;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.data.Matrix;
+import org.ejml.ops.CommonOps_BDRM;
 import org.ejml.simple.SimpleMatrix;
 
 public class SwerveOdometry {
@@ -67,7 +76,51 @@ public class SwerveOdometry {
      * @param elapsedTime
      */
     public void updatePoseExponential(double[] wheelVelocities, double[] moduleOrientations, double heading, double elapsedTime) {
+        inverseKinematics(wheelVelocities, moduleOrientations);
 
+        // ROBOT CENTRIC deltas
+        double deltax = vx * elapsedTime;
+        double deltay = vy * elapsedTime;
+        double deltaheading = heading - this.heading;
+
+        // pose exponential matrix math
+        SimpleMatrix deltas = new SimpleMatrix(3, 1);
+        deltas.set(1, 1, deltax);
+        deltas.set(2, 1, deltay);
+        deltas.set(3, 1, deltaheading);
+
+        SimpleMatrix poseExponential = new SimpleMatrix(3, 3);
+        poseExponential.set(1, 1, Math.sin(deltaheading) / deltaheading);
+        poseExponential.set(1, 2, -(1 - Math.cos(deltaheading) / deltaheading));
+        poseExponential.set(1, 3, 0.0);
+
+        poseExponential.set(2, 1, 1 - Math.cos(deltaheading) / deltaheading);
+        poseExponential.set(2, 2, Math.sin(deltaheading) / deltaheading);
+        poseExponential.set(2, 3, 0.0);
+
+        poseExponential.set(3, 1, 0.0);
+        poseExponential.set(3, 2, 0.0);
+        poseExponential.set(3, 3, 1.0);
+
+        SimpleMatrix rotation = new SimpleMatrix(3, 3);
+        rotation.set(1, 1, Math.cos(heading));
+        rotation.set(1, 2, -Math.sin(heading));
+        rotation.set(1, 3, 0.0);
+
+        rotation.set(2, 1, Math.sin(heading));
+        rotation.set(2, 2, Math.cos(heading));
+        rotation.set(2, 3, 0.0);
+
+        rotation.set(3, 1, 0.0);
+        rotation.set(3, 2, 0.0);
+        rotation.set(3, 3, 1.0);
+
+        // matrix multiplication
+        SimpleMatrix poseDelta = rotation.mult(poseExponential).mult(deltas);
+
+        x += poseDelta.get(1, 1);
+        y += poseDelta.get(2, 1);
+        this.heading = heading;
     }
 
     // get current pose broken down into x, y, and heading
