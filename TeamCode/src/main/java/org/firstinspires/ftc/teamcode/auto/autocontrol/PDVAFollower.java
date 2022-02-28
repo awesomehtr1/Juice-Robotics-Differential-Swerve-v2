@@ -15,6 +15,8 @@ public class PDVAFollower {
 
     private Path path;
 
+    private double lookahead;
+
     public PDVAFollower(
             HardwareMap hardwareMap,
             double[] PDVAconstants,
@@ -42,18 +44,22 @@ public class PDVAFollower {
                 time);
     }
 
+    public double getErrorToPath() {
+        double rise = path.getSegmentEnd().y - path.getSegmentStart().y;
+        double run = path.getSegmentEnd().x - path.getSegmentEnd().x;
+        double slope = rise / run;
+
+    }
+
+    public void setLookahead(double lookahead) {
+        this.lookahead = lookahead;
+    }
+
     public void setStartPose(double x, double y) {
         swerveDrive.setPose(x, y);
     }
 
     public void setPath(Path path) {
         this.path = path;
-    }
-
-    public double getErrorToPath() {
-        double rise = path.getSegmentEnd().y - path.getSegmentStart().y;
-        double run = path.getSegmentEnd().x - path.getSegmentEnd().x;
-        double slope = rise / run;
-
     }
 }
