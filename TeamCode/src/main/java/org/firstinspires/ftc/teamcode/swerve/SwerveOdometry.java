@@ -114,6 +114,8 @@ public class SwerveOdometry {
         x += poseDelta.get(1, 1);
         y += poseDelta.get(2, 1);
         this.heading = heading;
+        prevVX = vx;
+        prevVy = vy;
     }
 
     // get current pose broken down into x, y, and heading
