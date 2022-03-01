@@ -15,7 +15,7 @@ public class PDVAFollower {
 
     private Path path;
 
-    private double lookahead;
+    private double lookaheadRadius;
 
     public PDVAFollower(
             HardwareMap hardwareMap,
@@ -44,15 +44,27 @@ public class PDVAFollower {
                 time);
     }
 
-    public double getErrorToPath() {
+    public double[] getTargetPoint() {
+        // calculate constants for path segment linear equation
         double rise = path.getSegmentEnd().y - path.getSegmentStart().y;
         double run = path.getSegmentEnd().x - path.getSegmentEnd().x;
-        double slope = rise / run;
+        double m, b;
 
+        // check for edge case with vertical line
+        if(run != 0) {
+            m = rise / run;
+            b = path.getSegmentStart().y - (m * path.getSegmentStart().x);
+
+
+        }
+
+        else {
+
+        }
     }
 
-    public void setLookahead(double lookahead) {
-        this.lookahead = lookahead;
+    public void setLookaheadRadius(double lookaheadRadius) {
+        this.lookaheadRadius = lookaheadRadius;
     }
 
     public void setStartPose(double x, double y) {

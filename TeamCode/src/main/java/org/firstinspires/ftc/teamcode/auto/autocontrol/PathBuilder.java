@@ -5,12 +5,14 @@ import java.util.ArrayList;
 public class PathBuilder {
     private ArrayList<Waypoint> waypoints;
 
-    public void setStartingCoordinates(double[] startingCoordinates, double heading) {
-        waypoints.add(new Waypoint(startingCoordinates[0], startingCoordinates[1], heading, 0));
+    public PathBuilder setStartingCoordinates(double x, double y, double heading) {
+        waypoints.add(new Waypoint(x, y, heading, 0));
+        return this;
     }
 
-    public void addWaypoint(double[] coordinates, double heading, double endVelocity) {
-        waypoints.add(new Waypoint(coordinates[0], coordinates[1], heading, endVelocity));
+    public PathBuilder addWaypoint(double x, double y, double heading, double endVelocity) {
+        waypoints.add(new Waypoint(x, y, heading, endVelocity));
+        return this;
     }
 
     public Path build() {

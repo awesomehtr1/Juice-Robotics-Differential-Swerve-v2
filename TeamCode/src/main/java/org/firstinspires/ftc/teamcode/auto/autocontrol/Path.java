@@ -20,7 +20,7 @@ public class Path {
     }
 
     public void advanceSegment() {
-        if(currentSegment + 1 < waypoints.size())
+        if (currentSegment + 1 < waypoints.size())
             currentSegment += 1;
     }
 }

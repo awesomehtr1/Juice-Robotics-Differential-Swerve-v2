@@ -1,14 +1,5 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
-import com.sun.tools.javac.parser.LazyDocCommentTable;
-
-import org.apache.commons.math3.analysis.function.Sin;
-import org.ejml.data.DMatrix;
-import org.ejml.data.DMatrix3;
-import org.ejml.data.DMatrix3x3;
-import org.ejml.data.DMatrixRMaj;
-import org.ejml.data.Matrix;
-import org.ejml.ops.CommonOps_BDRM;
 import org.ejml.simple.SimpleMatrix;
 
 public class SwerveOdometry {
@@ -17,6 +8,8 @@ public class SwerveOdometry {
 
     // x and y velocities of the robot (ROBOT CENTRIC)
     double vx, vy;
+    double prevVX = 0;
+    double prevVy = 0;
 
     // trackwidth: horizontal distance between center of pairs of wheels
     // wheelbase: vertical distance between center of pairs of wheels
@@ -79,8 +72,8 @@ public class SwerveOdometry {
         inverseKinematics(wheelVelocities, moduleOrientations);
 
         // ROBOT CENTRIC deltas
-        double deltax = vx * elapsedTime;
-        double deltay = vy * elapsedTime;
+        double deltax = (vx + prevVX) * 0.5 * elapsedTime;
+        double deltay = (vy + prevVy) * 0.5 * elapsedTime;
         double deltaheading = heading - this.heading;
 
         // pose exponential matrix math
