@@ -98,7 +98,7 @@ public class SwerveDrive {
     public void setMotorPowers(double rotation, double strafe, double forward) {
         double deadzone = 0.1;
         if(drivePower == 1.0)
-            rotation *= 0.5;
+//            rotation *= 0.5;
         swerveKinematics.calculateKinematics(
                 rotation * drivePower,
                 strafe * drivePower,
@@ -172,6 +172,8 @@ public class SwerveDrive {
     public double getY() { return swerveOdometry.getY(); }
     public double getHeading() { return swerveOdometry.getHeading(); }
 
+    public double getVelocity() { return swerveOdometry.getV(); }
+
     public double[] getWheelVelocities(double elapsedTime) {
         double[] wheelVelocities = new double[4];
         for(int i = 0; i < 4; i++)
@@ -187,8 +189,8 @@ public class SwerveDrive {
     }
 
     // set/reset pose
-    public void setPose(double x, double y) {
-        swerveOdometry.setPose(x, y);
+    public void setPose(double x, double y, double heading) {
+        swerveOdometry.setPose(x, y, heading);
     }
 
     public void setSlowmode(boolean slowmode) {

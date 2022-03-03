@@ -19,6 +19,8 @@ public class Path {
         return waypoints.get(currentSegment + 1);
     }
 
+    public double getEndVelo() { return getSegmentEnd().endVelocity; }
+
     public void advanceSegment() {
         if (currentSegment + 1 < waypoints.size())
             currentSegment += 1;

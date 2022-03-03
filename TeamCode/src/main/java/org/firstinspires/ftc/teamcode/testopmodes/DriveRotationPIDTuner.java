@@ -64,6 +64,7 @@ public class DriveRotationPIDTuner extends LinearOpMode {
 
             drive.setMotorPowers(power * voltageCompensation, 0, 0);
 
+            packet.put("integral", Math.abs(pid.integral * kI) * Math.signum(pid.error));
             packet.put("starting voltage", gyro.startingVoltage);
             packet.put("set state", target);
             packet.put("angle", gyro.getLowPassEstimate());

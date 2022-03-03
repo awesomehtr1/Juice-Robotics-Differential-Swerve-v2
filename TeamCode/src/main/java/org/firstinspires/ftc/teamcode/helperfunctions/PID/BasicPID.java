@@ -8,9 +8,11 @@ public class BasicPID {
     public double kP, kI, kD; // PID coefficients
     public double kS; // static coefficient
     public double integral; // current integral
+    public double error;
     public boolean firstSetStateLoop, firstGetOutputLoop;
     public double prevTime, prevError, startTime; // last loop + time
     public ElapsedTime time;
+    private double power;
 
     public BasicPID(double kP, double kI, double kD, double kS, ElapsedTime time){
         this.kP = kP;
@@ -34,7 +36,7 @@ public class BasicPID {
         }
 
         double deltaTime = (currentTime - prevTime)/1000;
-        double error = calculateError(currentState);
+        error = calculateError(currentState);
         double deltaError = error - prevError;
         prevTime = currentTime;
         prevError = error;
@@ -44,7 +46,7 @@ public class BasicPID {
             derivative = deltaError / deltaTime;
         }
         this.currentState = currentState;
-        double power = kP * error + kI * integral + kD * derivative;
+        power = kP * error + Math.abs(kI * integral) * Math.signum(error) + kD * derivative;
         if(shouldIntegralBeZeroed(error, desiredState))
             clearIntegral();
         if (incrementIntegral(power))
@@ -53,6 +55,8 @@ public class BasicPID {
             return power + (Math.signum(power) * kS);
         return power;
     }
+
+    public double getPower() { return power; }
 
     public double calculateError(double currentState) { return desiredState - currentState; }
 

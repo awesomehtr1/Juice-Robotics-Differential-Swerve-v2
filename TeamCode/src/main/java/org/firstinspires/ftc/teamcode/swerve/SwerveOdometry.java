@@ -124,10 +124,16 @@ public class SwerveOdometry {
     public double getHeading() { return heading; }
 
     // set/reset pose
-    public void setPose(double x, double y) {
+    public void setPose(double x, double y, double heading) {
         this.x = x;
         this.y = y;
+        this.heading = heading;
     }
+
+    // get current velocity
+    public double getVx() { return vx; }
+    public double getVy() { return vy; }
+    public double getV() { return Math.sqrt((vx*vx)+(vy*vy)); }
 
     // functions to set wheelbase and trackwidth measurements
     public void setWheelbase(double wheelbase) { this.wheelbase = wheelbase; }
