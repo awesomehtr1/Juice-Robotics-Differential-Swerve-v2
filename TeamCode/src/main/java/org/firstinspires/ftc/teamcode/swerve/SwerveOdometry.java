@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
+import com.acmerobotics.roadrunner.drive.Drive;
+
 import org.ejml.simple.SimpleMatrix;
+import org.firstinspires.ftc.teamcode.auto.autocontrol.DriveConstants;
 
 public class SwerveOdometry {
     // x, y, and heading of the robot (FIELD CENTRIC)
@@ -8,7 +11,7 @@ public class SwerveOdometry {
 
     // x and y velocities of the robot (ROBOT CENTRIC)
     double vx, vy;
-    double prevVX = 0;
+    double prevVx = 0;
     double prevVy = 0;
 
     // trackwidth: horizontal distance between center of pairs of wheels
@@ -51,10 +54,14 @@ public class SwerveOdometry {
         inverseKinematics(wheelVelocities, moduleOrientations);
         this.heading = heading;
         // matrix square rotation equations
-        double deltax = (vx * Math.cos(heading)) + (vy * Math.sin(heading));
-        double deltay = (vx * Math.sin(heading) + (vy * Math.cos(heading)));
-        deltax *= elapsedTime;
-        deltay *= elapsedTime;
+        double rotatedVx = (vx * Math.cos(heading)) + (vy * Math.sin(heading));
+        double rotatedVy = (vx * Math.sin(heading) + (vy * Math.cos(heading)));
+        double deltax = (rotatedVx + prevVx) * 0.5 * elapsedTime;
+        double deltay = (rotatedVy + prevVy) * 0.5 * elapsedTime;
+        deltax /= DriveConstants.driveTicksPerInch;
+        deltay /= DriveConstants.driveTicksPerInch;
+        prevVx = vx;
+        prevVy = vy;
         x += deltax;
         y += deltay;
     }
@@ -72,7 +79,7 @@ public class SwerveOdometry {
         inverseKinematics(wheelVelocities, moduleOrientations);
 
         // ROBOT CENTRIC deltas
-        double deltax = (vx + prevVX) * 0.5 * elapsedTime;
+        double deltax = (vx + prevVx) * 0.5 * elapsedTime;
         double deltay = (vy + prevVy) * 0.5 * elapsedTime;
         double deltaheading = heading - this.heading;
 
@@ -111,10 +118,14 @@ public class SwerveOdometry {
         // matrix multiplication
         SimpleMatrix poseDelta = rotation.mult(poseExponential).mult(deltas);
 
-        x += poseDelta.get(1, 1);
-        y += poseDelta.get(2, 1);
+        double deltaX = poseDelta.get(1, 1);
+        double deltaY = poseDelta.get(2, 1);
+        deltaX /= DriveConstants.driveTicksPerInch;
+        deltaY /= DriveConstants.driveTicksPerInch;
+        x += deltaX;
+        y += deltaY;
         this.heading = heading;
-        prevVX = vx;
+        prevVx = vx;
         prevVy = vy;
     }
 

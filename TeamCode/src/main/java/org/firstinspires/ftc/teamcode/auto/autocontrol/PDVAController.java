@@ -11,6 +11,7 @@ public class PDVAController {
     private double prevTime;
     private double prevError, error;
     private double power;
+    private double P, D, V, A;
 
     private boolean firstLoop;
 
@@ -53,16 +54,16 @@ public class PDVAController {
         error = target - state;
 
         // compute P
-        double P = error * kP;
+        P = error * kP;
 
         // compute D
         double deltaTime = (currentTime - prevTime);
         double deltaError = error - prevError;
-        double D = deltaError / deltaTime * kD;
+        D = deltaError / deltaTime * kD;
 
         // compute feedforward
-        double V = velocity * kV;
-        double A = acceleration * kA;
+        V = velocity * kV;
+        A = acceleration * kA;
 
         // sum powers
         power = P + D + V + A;
@@ -75,6 +76,8 @@ public class PDVAController {
     public void setTarget(double target) { this.target = target; }
 
     public double getOutput() { return power; }
+
+    public double getFeedForwardOutput() { return V + A; }
 
     public void setkP(double kP) { this.kP = kP; }
     public void setkD(double kD) { this.kD = kD; }
