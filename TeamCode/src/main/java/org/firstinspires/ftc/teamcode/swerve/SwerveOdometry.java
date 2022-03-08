@@ -54,7 +54,7 @@ public class SwerveOdometry {
         // matrix square rotation equations
         double robotCentricDeltaX = (vx + prevVx) * 0.5 * elapsedTime;
         double robotCentricDeltaY = (vy + prevVy) * 0.5 * elapsedTime;
-        double deltax = (robotCentricDeltaX * Math.cos(heading)) + (robotCentricDeltaY * Math.sin(heading));
+        double deltax = (robotCentricDeltaX * Math.cos(heading)) - (robotCentricDeltaY * Math.sin(heading));
         double deltay = (robotCentricDeltaX * Math.sin(heading) + (robotCentricDeltaY * Math.cos(heading)));
         deltay /= DriveConstants.driveTicksPerInch;
         deltay /= DriveConstants.driveTicksPerInch;
