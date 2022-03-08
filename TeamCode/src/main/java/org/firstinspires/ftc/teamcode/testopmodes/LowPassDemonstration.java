@@ -33,7 +33,7 @@ public class LowPassDemonstration extends LinearOpMode {
             packet.put("graph lower", graphLower);
             packet.put("raw velocity", RB.getVelocity());
             packet.put("filtered velocity", lowPassFilter.returnValue());
-            dashboard.sendTelemetryPacket(packet);
+//            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

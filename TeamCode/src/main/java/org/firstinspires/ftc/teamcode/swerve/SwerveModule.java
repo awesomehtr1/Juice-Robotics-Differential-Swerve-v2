@@ -37,7 +37,7 @@ public class SwerveModule {
     }
 
     // returns analog encoder angle; returns -pi to pi radian format
-    public double getAngle() { return as5600.getLowPassEstimate(); }
+    public double getAngle() { return as5600.getAngle(); }
 
     // returns velocity of drive wheel
     public double getWheelVelocity(double elapsedTime) {
@@ -74,4 +74,8 @@ public class SwerveModule {
     public double getTargetAngle() { return targetAngle; }
 
     public void setBrake() { drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); }
+
+    public void reset() { drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
+
+    public void runWithoutEncoder() { drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); }
 }

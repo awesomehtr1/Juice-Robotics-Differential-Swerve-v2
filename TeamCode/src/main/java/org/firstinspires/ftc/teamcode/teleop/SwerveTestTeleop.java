@@ -11,8 +11,7 @@ import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 public class SwerveTestTeleop extends LinearOpMode {
     public void runOpMode(){
         SwerveDrive swerveDrive = new SwerveDrive(hardwareMap);
-        TelemetryPacket packet = new TelemetryPacket();
-        FtcDashboard dashboard = FtcDashboard.getInstance();
+
         waitForStart();
         while(opModeIsActive()) {
             double rotation = gamepad1.right_stick_x;
@@ -24,11 +23,6 @@ public class SwerveTestTeleop extends LinearOpMode {
                 swerveDrive.setSlowmode(true);
             if(gamepad1.b)
                 swerveDrive.setSlowmode(false);
-
-            packet.put("RF Current", swerveDrive.swerveModules[0].getAngle());
-            packet.put("Atan2 Target", swerveDrive.swerveKinematics.getWheelAngles()[0]);
-            packet.put("Final Target", swerveDrive.swerveModules[0].getTargetAngle());
-            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

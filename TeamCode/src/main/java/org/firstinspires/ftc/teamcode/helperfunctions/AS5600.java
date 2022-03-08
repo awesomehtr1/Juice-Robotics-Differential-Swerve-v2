@@ -8,17 +8,15 @@ public class AS5600 {
     AnalogInput angleOut; // analog output
     private double angle; // stores current angle
     private double correction; // voltage that corresponds to 0 rad
-    private final double maxVoltage = 3.286;
-    private final double minVoltage = 0.001;
+    private double maxVoltage;
+    private double minVoltage;
 
-    private LowPassFilter lowPassFilter;
-    private double a = 0.05;
-
-    public AS5600(HardwareMap hardwareMap, String deviceName, double correction) {
+    public AS5600(HardwareMap hardwareMap, String deviceName, double correction, double max, double min) {
         this.hardwareMap = hardwareMap;
         angleOut = hardwareMap.get(AnalogInput.class, deviceName);
         this.correction = correction;
-        lowPassFilter = new LowPassFilter(a);
+        maxVoltage = max;
+        minVoltage = min;
     }
 
     // updates returns angle in pi to -pi format
@@ -35,7 +33,6 @@ public class AS5600 {
         angle *= (Math.PI * 2);
         angle = applyLinearity(-angle);
         angle = MathFunctions.angleWrap(angle);
-        lowPassFilter.update(angle);
     }
 
     // applies function linearize the output
@@ -59,12 +56,5 @@ public class AS5600 {
     // returns raw output voltage
     public double getVoltage() {
         return angleOut.getVoltage();
-    }
-
-    public void setLowPassConstant(double a) { this.a = a; }
-
-    public double getLowPassEstimate () {
-        update();
-        return lowPassFilter.returnValue();
     }
 }

@@ -68,7 +68,7 @@ public class DriveRotationPIDTuner extends LinearOpMode {
             packet.put("starting voltage", gyro.startingVoltage);
             packet.put("set state", target);
             packet.put("angle", gyro.getLowPassEstimate());
-            dashboard.sendTelemetryPacket(packet);
+//            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

@@ -19,6 +19,8 @@ public class SanfordGyro {
     public double startingVoltage;
     boolean measuringLoop = true;
 
+    private double angleOffset = 0;
+
     ElapsedTime bootup;
 
     public SanfordGyro(HardwareMap hardwareMap){
@@ -35,7 +37,7 @@ public class SanfordGyro {
         angle -= minVoltage;
         angle /= (maxVoltage - minVoltage);
         angle *= Math.PI * 2;
-        angle = MathFunctions.angleWrap(angle);
+        angle = MathFunctions.angleWrap(angle + angleOffset);
         if(bootup.milliseconds() >= 1000 && measuringLoop && Math.abs(angleOut.getVoltage()) > 0.05) {
             startingVoltage = angleOut.getVoltage();
             measuringLoop = false;
@@ -45,11 +47,16 @@ public class SanfordGyro {
     }
 
     public double getAngle(){
+        update();
         return MathFunctions.angleWrap(angle);
     }
 
     public double getLowPassEstimate() {
         update();
         return lowPassFilter.returnValue();
+    }
+
+    public void setStartingAngle(double angle) {
+        angleOffset = angle;
     }
 }

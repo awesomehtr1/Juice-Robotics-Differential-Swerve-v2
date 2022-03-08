@@ -20,10 +20,10 @@ public class IntakeTester extends LinearOpMode {
         r2 = hardwareMap.get(CRServo.class, "intakeR2");
         waitForStart();
         while(opModeIsActive()) {
-            l1.setPower(power);
-            l2.setPower(-power);
-            r1.setPower(-power);
-            r2.setPower(power);
+            l1.setPower(gamepad1.left_stick_y);
+            l2.setPower(-gamepad1.left_stick_y);
+            r1.setPower(-gamepad1.left_stick_y);
+            r2.setPower(gamepad1.left_stick_y);
         }
     }
 }

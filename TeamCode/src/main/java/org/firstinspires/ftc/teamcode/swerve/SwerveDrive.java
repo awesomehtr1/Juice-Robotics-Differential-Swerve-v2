@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.helperfunctions.MathFunctions;
 import org.firstinspires.ftc.teamcode.helperfunctions.PID.SwerveRotationPID;
 
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
 
 // high level swerve drive class which utilizes gamepad controls to control the swerve modules
 // wraps SwerveKinematics controls and implements SwerveModule
@@ -40,6 +41,12 @@ public class SwerveDrive {
     private double drivePower = 0.3;
 
     VoltageSensor voltageSensor;
+
+    private enum ZEROBEHAVIOR {
+        RESPONSIVE,
+        LOCK
+    }
+    ZEROBEHAVIOR zerobehavior;
 
     public SwerveDrive(HardwareMap hardwareMap) {
         swerveKinematics = new SwerveKinematics();
@@ -72,10 +79,10 @@ public class SwerveDrive {
         LBrot.setDirection(DcMotorSimple.Direction.REVERSE);
         RBrot.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.619); //2.523 alt encoder
-        LFas5600 = new AS5600(hardwareMap, "LFanalog", 0.125);
-        LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.245);
-        RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.969);
+        RFas5600 = new AS5600(hardwareMap, "RFanalog", 2.621, 3.291, 0.001);
+        LFas5600 = new AS5600(hardwareMap, "LFanalog", 0.125, 3.286, 0.004);
+        LBas5600 = new AS5600(hardwareMap, "LBanalog", 3.251, 3.282, 0.001);
+        RBas5600 = new AS5600(hardwareMap, "RBanalog", 2.971, 3.291, 0.0);
 
         RFPID = new SwerveRotationPID(0.7, 0.0, 0.013, 0.03, RFtime);
         LFPID = new SwerveRotationPID(0.67, 0.0, 0.013, 0.02, LFtime);
@@ -92,13 +99,21 @@ public class SwerveDrive {
         swerveModules[1] = LF;
         swerveModules[2] = LB;
         swerveModules[3] = RB;
+
+        // stop and reset drive for odo
+        for(SwerveModule swerveModule : swerveModules) {
+            swerveModule.reset();
+            swerveModule.runWithoutEncoder();
+        }
+
+        zerobehavior = ZEROBEHAVIOR.RESPONSIVE;
     }
 
     // sets rotation and drive powers using inputs from gamepad
     public void setMotorPowers(double rotation, double strafe, double forward) {
         double deadzone = 0.1;
         if(drivePower == 1.0)
-//            rotation *= 0.5;
+            rotation *= 0.5;
         swerveKinematics.calculateKinematics(
                 rotation * drivePower,
                 strafe * drivePower,
@@ -168,6 +183,12 @@ public class SwerveDrive {
         swerveOdometry.updatePose(wheelVelocities, moduleOrientations, heading, elapsedTime);
     }
 
+    public void updatePoseExponential(double heading, double elapsedTime) {
+        double[] wheelVelocities = getWheelVelocities(elapsedTime);
+        double[] moduleOrientations = getModuleOrientations();
+        swerveOdometry.updatePoseExponential(wheelVelocities, moduleOrientations, heading, elapsedTime);
+    }
+
     public double getX() { return swerveOdometry.getX(); }
     public double getY() { return swerveOdometry.getY(); }
     public double getHeading() { return swerveOdometry.getHeading(); }
@@ -200,5 +221,9 @@ public class SwerveDrive {
     public void setBrake() {
         for(SwerveModule module : swerveModules)
             module.setBrake();
+    }
+
+    public void setZeroBehavior(SwerveDrive.ZEROBEHAVIOR behavior) {
+        zerobehavior = behavior;
     }
 }

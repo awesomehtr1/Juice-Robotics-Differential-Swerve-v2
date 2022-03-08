@@ -46,7 +46,7 @@ public class GyroTest extends LinearOpMode {
             packet.put("voltage", voltage);
             packet.put("min", minVoltage);
             packet.put("max", maxVoltage);
-            dashboard.sendTelemetryPacket(packet);
+//            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

@@ -22,6 +22,8 @@ public class RunToPosition {
 
     private double prevTime;
 
+    private double power;
+
     public RunToPosition(
             HardwareMap hardwareMap,
             double[] PDVAconstants,
@@ -51,6 +53,7 @@ public class RunToPosition {
                 rotationPIDconstants[3],
                 time);
         gyro = new SanfordGyro(hardwareMap);
+        power = 1;
     }
 
     public void update() {
@@ -87,12 +90,12 @@ public class RunToPosition {
         );
         double strafe, forward;
         if(converge(distanceToTarget)) {
-            strafe = Math.cos(angle) * translationPower;
-            forward = Math.sin(angle) * translationPower;
+            strafe = Math.cos(angle) * translationPower * power;
+            forward = Math.sin(angle) * translationPower * power;
         }
         else {
-            strafe = Math.cos(angle) * feedforwardPower;
-            forward = Math.sin(angle) * feedforwardPower;
+            strafe = Math.cos(angle) * feedforwardPower * power;
+            forward = Math.sin(angle) * feedforwardPower * power;
         }
         swerveDrive.setMotorPowers(rotation, strafe, forward);
     }
@@ -106,7 +109,7 @@ public class RunToPosition {
     public double vectorAngle(double x1, double y1, double x2, double y2) {
         double x = x2 - x1;
         double y = y2 - y1;
-        return Math.atan(y / x);
+        return Math.atan2(y, x);
     }
 
     public void updatePose() {
@@ -133,6 +136,8 @@ public class RunToPosition {
         targetY = y;
         targetHeading = heading;
     }
+
+    public void setDrivePower(double power) { this.power = power; }
 
     public boolean reachedTarget(double distanceToTarget) {
         return distanceToTarget < DriveConstants.admissibleError;

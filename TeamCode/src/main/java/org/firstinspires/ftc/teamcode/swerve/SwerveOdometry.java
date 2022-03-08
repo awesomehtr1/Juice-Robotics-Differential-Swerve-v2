@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
-import com.acmerobotics.roadrunner.drive.Drive;
-
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.auto.autocontrol.DriveConstants;
 
@@ -54,11 +52,11 @@ public class SwerveOdometry {
         inverseKinematics(wheelVelocities, moduleOrientations);
         this.heading = heading;
         // matrix square rotation equations
-        double rotatedVx = (vx * Math.cos(heading)) + (vy * Math.sin(heading));
-        double rotatedVy = (vx * Math.sin(heading) + (vy * Math.cos(heading)));
-        double deltax = (rotatedVx + prevVx) * 0.5 * elapsedTime;
-        double deltay = (rotatedVy + prevVy) * 0.5 * elapsedTime;
-        deltax /= DriveConstants.driveTicksPerInch;
+        double robotCentricDeltaX = (vx + prevVx) * 0.5 * elapsedTime;
+        double robotCentricDeltaY = (vy + prevVy) * 0.5 * elapsedTime;
+        double deltax = (robotCentricDeltaX * Math.cos(heading)) + (robotCentricDeltaY * Math.sin(heading));
+        double deltay = (robotCentricDeltaX * Math.sin(heading) + (robotCentricDeltaY * Math.cos(heading)));
+        deltay /= DriveConstants.driveTicksPerInch;
         deltay /= DriveConstants.driveTicksPerInch;
         prevVx = vx;
         prevVy = vy;
@@ -85,41 +83,41 @@ public class SwerveOdometry {
 
         // pose exponential matrix math
         SimpleMatrix deltas = new SimpleMatrix(3, 1);
-        deltas.set(1, 1, deltax);
-        deltas.set(2, 1, deltay);
-        deltas.set(3, 1, deltaheading);
+        deltas.set(0, 0, deltax);
+        deltas.set(1, 0, deltay);
+        deltas.set(2, 0, deltaheading);
 
         SimpleMatrix poseExponential = new SimpleMatrix(3, 3);
+        poseExponential.set(0, 0, Math.sin(deltaheading) / deltaheading);
+        poseExponential.set(0, 1, -(1 - Math.cos(deltaheading) / deltaheading));
+        poseExponential.set(0, 2, 0.0);
+
+        poseExponential.set(1, 0, 1 - Math.cos(deltaheading) / deltaheading);
         poseExponential.set(1, 1, Math.sin(deltaheading) / deltaheading);
-        poseExponential.set(1, 2, -(1 - Math.cos(deltaheading) / deltaheading));
-        poseExponential.set(1, 3, 0.0);
+        poseExponential.set(1, 2, 0.0);
 
-        poseExponential.set(2, 1, 1 - Math.cos(deltaheading) / deltaheading);
-        poseExponential.set(2, 2, Math.sin(deltaheading) / deltaheading);
-        poseExponential.set(2, 3, 0.0);
-
-        poseExponential.set(3, 1, 0.0);
-        poseExponential.set(3, 2, 0.0);
-        poseExponential.set(3, 3, 1.0);
+        poseExponential.set(2, 0, 0.0);
+        poseExponential.set(2, 1, 0.0);
+        poseExponential.set(2, 2, 1.0);
 
         SimpleMatrix rotation = new SimpleMatrix(3, 3);
+        rotation.set(0, 0, Math.cos(heading));
+        rotation.set(0, 1, -Math.sin(heading));
+        rotation.set(0, 2, 0.0);
+
+        rotation.set(1, 0, Math.sin(heading));
         rotation.set(1, 1, Math.cos(heading));
-        rotation.set(1, 2, -Math.sin(heading));
-        rotation.set(1, 3, 0.0);
+        rotation.set(1, 2, 0.0);
 
-        rotation.set(2, 1, Math.sin(heading));
-        rotation.set(2, 2, Math.cos(heading));
-        rotation.set(2, 3, 0.0);
-
-        rotation.set(3, 1, 0.0);
-        rotation.set(3, 2, 0.0);
-        rotation.set(3, 3, 1.0);
+        rotation.set(2, 0, 0.0);
+        rotation.set(2, 1, 0.0);
+        rotation.set(2, 2, 1.0);
 
         // matrix multiplication
         SimpleMatrix poseDelta = rotation.mult(poseExponential).mult(deltas);
 
-        double deltaX = poseDelta.get(1, 1);
-        double deltaY = poseDelta.get(2, 1);
+        double deltaX = (double) poseDelta.get(0, 0);
+        double deltaY = (double) poseDelta.get(1, 0);
         deltaX /= DriveConstants.driveTicksPerInch;
         deltaY /= DriveConstants.driveTicksPerInch;
         x += deltaX;

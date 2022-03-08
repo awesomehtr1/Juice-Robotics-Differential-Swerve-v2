@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.helperfunctions.AS5600;
 @TeleOp(name = "Analog Encoder Test", group = "TestOpModes")
 public class AS5600Test extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
-        AS5600 as5600 = new AS5600(hardwareMap, "LBanalog", 2.940);
+        AS5600 as5600 = new AS5600(hardwareMap, "LBanalog", 2.940, 3.29, 0);
         DcMotor RFrot = hardwareMap.get(DcMotor.class, "RFrot");
         TelemetryPacket packet = new TelemetryPacket();
         FtcDashboard dashboard = FtcDashboard.getInstance();
