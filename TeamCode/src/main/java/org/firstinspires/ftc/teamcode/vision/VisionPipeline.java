@@ -12,7 +12,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class VisionPipeline extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
-
+    
     public static Rect LEFTBOX = new Rect(
             new Point(5, 30),
             new Point(90, 100)
@@ -81,9 +81,9 @@ public class VisionPipeline extends OpenCvPipeline {
         Scalar colorEmpty = new Scalar(255, 0, 0);
 
         // draw green rect on target box/red on empty box
-        Imgproc.rectangle(mat, LEFTBOX, pos == POS.LEFT ? colorTarget:colorEmpty);
+        Imgproc.rectangle(mat, RIGHTBOX, pos == POS.LEFT ? colorTarget:colorEmpty);
         Imgproc.rectangle(mat, CENTERBOX, pos == POS.CENTER ? colorTarget:colorEmpty);
-        Imgproc.rectangle(mat, RIGHTBOX, pos == POS.RIGHT ? colorTarget:colorEmpty);
+        Imgproc.rectangle(mat, LEFTBOX, pos == POS.RIGHT ? colorTarget:colorEmpty);
 
         return mat;
     }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.auto.autocontrol.TimeBasedDrive;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 
-@Autonomous(name = "Remote Auto", group = "Auto")
+@Disabled
 public class RemoteAuto extends LinearOpMode {
     Robot robot;
     TimeBasedDrive drive;

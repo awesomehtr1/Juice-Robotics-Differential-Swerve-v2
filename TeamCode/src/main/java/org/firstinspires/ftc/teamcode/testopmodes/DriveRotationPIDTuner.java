@@ -21,6 +21,7 @@ public class DriveRotationPIDTuner extends LinearOpMode {
 
     public static double kP, kI, kD, kS;
     public static double angle;
+    public static double powerCap;
     ElapsedTime time, movementTimer;
 
     VoltageSensor voltageSensor;
@@ -59,16 +60,16 @@ public class DriveRotationPIDTuner extends LinearOpMode {
                 movementTimer.reset();
             pid.setState(target);
 
-            double power = pid.updatePID(gyro.getLowPassEstimate());
-            double voltageCompensation = 13.6 / voltageSensor.getVoltage();
+            double power = pid.updatePID(gyro.getAngle());
+            if(Math.abs(power) > powerCap)
+                power = Math.signum(power) * powerCap;
 
-            drive.setMotorPowers(power * voltageCompensation, 0, 0);
+            drive.setMotorPowers(power, 0, 0);
 
-            packet.put("integral", Math.abs(pid.integral * kI) * Math.signum(pid.error));
             packet.put("starting voltage", gyro.startingVoltage);
             packet.put("set state", target);
             packet.put("angle", gyro.getLowPassEstimate());
-//            dashboard.sendTelemetryPacket(packet);
+            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

@@ -56,11 +56,11 @@ public class SwerveOdometry {
         double robotCentricDeltaY = (vy + prevVy) * 0.5 * elapsedTime;
         double deltax = (robotCentricDeltaX * Math.cos(heading)) - (robotCentricDeltaY * Math.sin(heading));
         double deltay = (robotCentricDeltaX * Math.sin(heading) + (robotCentricDeltaY * Math.cos(heading)));
-        deltay /= DriveConstants.driveTicksPerInch;
+        deltax /= DriveConstants.driveTicksPerInch;
         deltay /= DriveConstants.driveTicksPerInch;
         prevVx = vx;
         prevVy = vy;
-        x += deltax;
+        x += -deltax;
         y += deltay;
     }
 
