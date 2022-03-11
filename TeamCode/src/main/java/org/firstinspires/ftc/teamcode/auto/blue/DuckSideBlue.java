@@ -30,6 +30,7 @@ public class DuckSideBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, gamepad1, gamepad2);
+        robot.spinner.setPower(-1);
         drive = new RunToPosition(
                 hardwareMap,
                 DriveConstants.drivePIDConstants,
@@ -60,14 +61,32 @@ public class DuckSideBlue extends LinearOpMode {
 
         // AUTO CODE
         robot.claw.grip();
-        robot.lift.mid();
+        robot.lift.rest();
         robot.arm.intake();
         robot.update();
 
         // SCORE PRELOAD
-        drive.setTargetPoint(-32, 23);
+        timeout(0.25);
+
+        // RANDOMIZATION SWITCH CASE
+        switch (level) {
+            case LOW:
+                robot.arm.low();
+                robot.lift.rest();
+                drive.setTargetPoint(-34, 24);
+                break;
+            case MID:
+                robot.arm.mid();
+                robot.lift.mid();
+                drive.setTargetPoint(-34, 24);
+                break;
+            case HIGH:
+                robot.arm.high();
+                robot.lift.high();
+                drive.setTargetPoint(-33, 24);
+                break;
+        }
         runDrive();
-        robot.arm.mid();
         timeout(0.5);
         drive.setTargetHeading(Math.toRadians(0));
         runDrive();
@@ -79,11 +98,11 @@ public class DuckSideBlue extends LinearOpMode {
         runDrive();
         robot.claw.timedRetract();
         robot.arm.intake();
-//        robot.lift.rest();
+        robot.lift.rest();
         timeout(0.5);
 
         // SPIN DUCK
-        drive.setTargetHeading(Math.toRadians(55));
+        drive.setTargetHeading(Math.toRadians(30));
         runDrive();
         drive.setTargetPoint(-55, 55);
         runDrive();
@@ -98,18 +117,26 @@ public class DuckSideBlue extends LinearOpMode {
         runDrive();
         drive.setTargetHeading(Math.toRadians(90));
         runDrive();
-        drive.setTargetPoint(-52, 60);
+        drive.setTargetPoint(-52, 62);
         runDrive();
         drive.strafeByTime(0.25, 2);
         runDrive();
         robot.intake.off();
+        robot.claw.grip();
 
         // SCORE DUCK
-        drive.setTargetPoint(-32, 23);
+        drive.setTargetPoint(-34, 23);
         runDrive();
         drive.setTargetHeading(Math.toRadians(0));
         runDrive();
-        timeout(3);
+        robot.lift.high();
+        robot.arm.high();
+        timeout(0.75);
+        robot.claw.deposit();
+        timeout(0.5);
+        robot.claw.timedRetract();
+        robot.arm.intake();
+        robot.lift.rest();
 
         // PARK
         drive.setTargetPoint(-60, 35);

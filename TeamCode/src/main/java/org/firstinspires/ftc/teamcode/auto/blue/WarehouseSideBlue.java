@@ -63,15 +63,35 @@ public class WarehouseSideBlue extends LinearOpMode {
 
         // AUTO CODE
         robot.claw.grip();
-        robot.lift.mid();
+        robot.lift.rest();
         robot.arm.intake();
         robot.update();
 
         // SCORE PRELOAD
-        robot.arm.mid();
-        drive.setTargetPoint(-2, 38);
+        timeout(0.25);
+
+        // RANDOMIZATION SWITCH CASE
+        switch (level) {
+            case LOW:
+                robot.arm.low();
+                robot.lift.rest();
+                drive.setTargetPoint(-1, 39);
+                break;
+            case MID:
+                robot.arm.mid();
+                robot.lift.mid();
+                drive.setTargetPoint(-1, 39);
+                break;
+            case HIGH:
+                robot.arm.high();
+                robot.lift.high();
+                drive.setTargetPoint(-2, 36);
+                break;
+        }
+
         drive.setTargetHeading(Math.toRadians(130));
         runDrive();
+        timeout(0.5);
         robot.claw.deposit();
         timeout(0.75);
 
@@ -80,54 +100,59 @@ public class WarehouseSideBlue extends LinearOpMode {
         runDrive();
         robot.claw.timedRetract();
         robot.arm.intake();
-//        robot.lift.rest();
+        robot.lift.rest();
         timeout(0.5);
 
         // CYCLE LOOP
         for(int i = 0; i < cycles; i++) {
 
             // WAREHOUSE INTAKE CYCLE
-            DriveConstants.admissibleHeadingError = Math.toRadians(4);
+            DriveConstants.admissibleHeadingError = Math.toRadians(5);
+            DriveConstants.admissibleError = 1.65;
             drive.setTargetHeading(Math.toRadians(180));
             drive.setTargetPoint(8, 58);
             runDrive();
-            drive.setTargetPoint(8, 63);
+            drive.setTargetPoint(8, 62);
             runDrive();
             robot.intake.on();
-            drive.setTargetPoint(45, 63);
+            drive.setTargetPoint(40, 62);
             runDrive();
-            drive.forwardByTime(0.2, 1.05);
+            drive.forwardByTime(0.25, 0.95);
             runDrive();
             robot.intake.reverse();
             robot.claw.grip();
 
             // DRIVE TO SCORE CARGO
-            drive.setTargetPoint(12, 63);
+            DriveConstants.admissibleError = 2;
+            drive.setTargetPoint(12, 62);
             runDrive();
             robot.intake.off();
+            timeout(0.5);
+            robot.intake.reverse();
             DriveConstants.admissibleHeadingError = Math.toRadians(10);
-            drive.setTargetHeading(Math.toRadians(130));
-            drive.setTargetPoint(-3, 37);
+            drive.setTargetHeading(Math.toRadians(125));
+            drive.setTargetPoint(-2, 36);
             runDrive();
 
             // DEPOSIT CARGO
-//        robot.lift.high();
+            robot.intake.off();
+            robot.lift.high();
             robot.arm.high();
-            timeout(1);
+            timeout(0.75);
             robot.claw.deposit();
+            timeout(0.5);
 
             // RESET
             robot.claw.timedRetract();
             robot.arm.intake();
-//        robot.lift.rest();
-            timeout(0.5);
+            robot.lift.rest();
         }
 
         // PARK
         drive.setTargetHeading(Math.toRadians(180));
-        drive.setTargetPoint(16, 63);
+        drive.setTargetPoint(16, 62);
         runDrive();
-        drive.setTargetPoint(45, 63);
+        drive.setTargetPoint(45, 62);
         runDrive();
     }
 

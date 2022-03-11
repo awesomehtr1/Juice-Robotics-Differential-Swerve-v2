@@ -4,18 +4,24 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
 import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
 
-@TeleOp(name = "Teleop", group = "Teleop")
-public class Teleop extends LinearOpMode {
+@TeleOp(name = "Teleop Blue", group = "Teleop")
+public class TeleopBlue extends LinearOpMode {
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
         SwerveDrive drive = new SwerveDrive(hardwareMap);
+        drive.setFieldCentric(true);
+        drive.fieldCentricBlue();
         drive.setBrake();
+        drive.setSlowmode(false);
         robot.spinner.setPower(-1);
+
+        SanfordGyro gyro = new SanfordGyro(hardwareMap);
 
         // teleop managers
         // DRIVER 1
@@ -24,15 +30,15 @@ public class Teleop extends LinearOpMode {
                 .addAction(()-> robot.intake.on())
                 .addAction(()-> robot.intake.off())
                 .build());
-//        robot.createTeleOpManager(new TeleOpManagerBuilder()
-//                .typeHold(()-> gamepad1.right_trigger > 0.1)
-//                .addAction(()-> robot.intake.changePower(1))
-//                .addAction(()-> robot.intake.changePower(-1))
-//                .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // slowmode
                 .typeToggle(()-> gamepad1.left_trigger > 0.1)
                 .addAction(()-> drive.setSlowmode(true))
                 .addAction(()-> drive.setSlowmode(false))
+                .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder()
+                .typeToggle(()-> gamepad1.dpad_up)
+                .addAction(()-> drive.setFieldCentric(false))
+                .addAction(()-> drive.setFieldCentric(true))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring high
                 .typeTrigger(()-> gamepad1.left_bumper)
@@ -89,6 +95,7 @@ public class Teleop extends LinearOpMode {
             double strafe = gamepad1.left_stick_x;
             double forward = -gamepad1.left_stick_y;
             drive.setMotorPowers(rotation, strafe, forward);
+            drive.setHeading(gyro.getAngle());
         }
     }
 }

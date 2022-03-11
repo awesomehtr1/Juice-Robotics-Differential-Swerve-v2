@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Lift implements Subsystem{
     Robot robot;
     Servo R1, R2, L1, L2;
-    final double rest = 0.0;
-    final double mid = 0.3;
-    final double high = 0.7;
+    final double rest = 0.15;
+    final double mid = 0.4;
+    final double high = 0.85;
 
     boolean move;
     double delay;
