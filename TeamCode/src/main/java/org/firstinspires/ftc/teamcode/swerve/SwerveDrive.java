@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.swerve;
 
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -39,6 +40,9 @@ public class SwerveDrive {
     public SwerveModule[] swerveModules = new SwerveModule[4];
 
     private double drivePower = 0.3;
+    public boolean fieldCentric = false;
+    private double heading = 0;
+    private double fieldCentricPerspective = -(Math.PI/2);
 
     VoltageSensor voltageSensor;
 
@@ -114,10 +118,22 @@ public class SwerveDrive {
         double deadzone = 0.1;
         if(drivePower == 1.0)
             rotation *= 0.5;
-        swerveKinematics.calculateKinematics(
-                rotation * drivePower,
-                strafe * drivePower,
-                forward * drivePower);
+
+        if(fieldCentric) {
+            double[] rotated = rotate(strafe, forward, heading);
+            double strafeRotated = rotated[0];
+            double forwardRotated = rotated[1];
+            swerveKinematics.calculateKinematics(
+                    rotation * drivePower,
+                    strafeRotated * drivePower,
+                    forwardRotated * drivePower);
+        }
+        else {
+            swerveKinematics.calculateKinematics(
+                    rotation * drivePower,
+                    strafe * drivePower,
+                    forward * drivePower);
+        }
         double[] rotAngleArray = swerveKinematics.getWheelAngles();
         double[] drivePowerArray = swerveKinematics.getWheelVelocities();
         if(Math.abs(strafe) < deadzone && Math.abs(forward) < deadzone && Math.abs(rotation) < deadzone) {
@@ -223,7 +239,28 @@ public class SwerveDrive {
             module.setBrake();
     }
 
+    public void setFieldCentric(boolean bool) { fieldCentric = bool; }
+
+    public void fieldCentricRed() { fieldCentricPerspective = -(Math.PI / 2); }
+    public void fieldCentricBlue() { fieldCentricPerspective = (Math.PI / 2); }
+
+    public double[] rotate(double x, double y, double heading) {
+        MathFunctions.angleWrap(heading += fieldCentricPerspective);
+        double xRotated = (x * Math.cos(heading)) - (y * Math.sin(heading));
+        double yRotated = (x * Math.sin(heading) + (y * Math.cos(heading)));
+        double rotated[] = {xRotated, yRotated};
+        return rotated;
+    }
+
+    public void setHeading(double heading) { this.heading = heading; }
+
     public void setZeroBehavior(SwerveDrive.ZEROBEHAVIOR behavior) {
         zerobehavior = behavior;
+    }
+
+    public void runWithEncoder() {
+        for(SwerveModule swerveModule : swerveModules) {
+            swerveModule.runWithEncoder();
+        }
     }
 }

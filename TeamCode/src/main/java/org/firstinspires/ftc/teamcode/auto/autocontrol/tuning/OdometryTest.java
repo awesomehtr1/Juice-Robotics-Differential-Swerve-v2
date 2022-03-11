@@ -23,10 +23,12 @@ public class OdometryTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         swerveDrive = new SwerveDrive(hardwareMap);
-        swerveDrive.setPose(-36, -64, -90);
+//        swerveDrive.setPose(-36, -64, -90);
+        swerveDrive.setPose(0, 0, 0);
         swerveDrive.setSlowmode(true);
         gyro = new SanfordGyro(hardwareMap);
-        gyro.setStartingAngle(Math.toRadians(-90));
+//        gyro.setStartingAngle(Math.toRadians(-90));
+        gyro.setStartingAngle(0);
         time = new ElapsedTime();
         prevTime = 0;
 

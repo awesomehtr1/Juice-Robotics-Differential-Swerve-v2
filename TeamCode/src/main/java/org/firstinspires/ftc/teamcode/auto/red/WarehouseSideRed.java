@@ -8,11 +8,12 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.auto.RemoteAuto;
 import org.firstinspires.ftc.teamcode.auto.autocontrol.DriveConstants;
 import org.firstinspires.ftc.teamcode.auto.autocontrol.RunToPosition;
+import org.firstinspires.ftc.teamcode.swerve.SwerveConstants;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 
-@Autonomous(name = "Red Duck Side", group = "Auto")
-public class DuckSideRed extends LinearOpMode {
+@Autonomous(name = "Red Warehouse Side", group = "Auto")
+public class WarehouseSideRed extends LinearOpMode {
     Robot robot;
     RunToPosition drive;
     Vision vision;
@@ -27,6 +28,8 @@ public class DuckSideRed extends LinearOpMode {
     }
     RemoteAuto.LEVEL level;
 
+    int cycles = 2; // number of extra cycles
+
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, gamepad1, gamepad2);
@@ -34,7 +37,7 @@ public class DuckSideRed extends LinearOpMode {
                 hardwareMap,
                 DriveConstants.drivePIDConstants,
                 DriveConstants.rotationPIDconstants);
-        drive.setStartPose(-36, -64, Math.toRadians(-90));
+        drive.setStartPose(12, -64, Math.toRadians(-90));
         drive.setTargetHeading(Math.toRadians(-90));
 
         vision = new Vision(hardwareMap, telemetry);
@@ -65,56 +68,67 @@ public class DuckSideRed extends LinearOpMode {
         robot.update();
 
         // SCORE PRELOAD
-        drive.setTargetPoint(-32, -23);
-        runDrive();
         robot.arm.mid();
-        timeout(0.5);
-        drive.setTargetHeading(Math.toRadians(0));
+        drive.setTargetPoint(-2, -38);
+        drive.setTargetHeading(Math.toRadians(-130));
         runDrive();
         robot.claw.deposit();
         timeout(0.75);
 
         // RESET
-        drive.setTargetPoint(-38, -23);
+        drive.setTargetPoint(2, -45);
         runDrive();
         robot.claw.timedRetract();
         robot.arm.intake();
 //        robot.lift.rest();
         timeout(0.5);
 
-        // SPIN DUCK
-        drive.setTargetHeading(Math.toRadians(-55));
-        runDrive();
-        drive.setTargetPoint(-55, -55);
-        runDrive();
-        drive.forwardByTime(0.15, 4);
-        robot.spinner.on();
-        timeout(4);
-        robot.spinner.off();
+        // CYCLE LOOP
+        for(int i = 0; i < cycles; i++) {
 
-        // INTAKE DUCK
-        robot.intake.on();
-        drive.setTargetPoint(-52, -52);
-        runDrive();
-        drive.setTargetHeading(Math.toRadians(-90));
-        runDrive();
-        drive.setTargetPoint(-52, -60);
-        runDrive();
-        drive.strafeByTime(-0.25, 2);
-        runDrive();
-        robot.intake.off();
+            // WAREHOUSE INTAKE CYCLE
+            DriveConstants.admissibleHeadingError = Math.toRadians(4);
+            drive.setTargetHeading(Math.toRadians(-180));
+            drive.setTargetPoint(8, -58);
+            runDrive();
+            drive.setTargetPoint(8, -63);
+            runDrive();
+            robot.intake.on();
+            drive.setTargetPoint(45, -63);
+            runDrive();
+            drive.forwardByTime(0.2, 1.05);
+            runDrive();
+            robot.intake.reverse();
+            robot.claw.grip();
 
-        // SCORE DUCK
-        drive.setTargetPoint(-32, -23);
-        runDrive();
-        drive.setTargetHeading(Math.toRadians(0));
-        runDrive();
-        timeout(3);
+            // DRIVE TO SCORE CARGO
+            drive.setTargetPoint(12, -63);
+            runDrive();
+            robot.intake.off();
+            DriveConstants.admissibleHeadingError = Math.toRadians(10);
+            drive.setTargetHeading(Math.toRadians(-130));
+            drive.setTargetPoint(-3, -37);
+            runDrive();
+
+            // DEPOSIT CARGO
+//        robot.lift.high();
+            robot.arm.high();
+            timeout(1);
+            robot.claw.deposit();
+
+            // RESET
+            robot.claw.timedRetract();
+            robot.arm.intake();
+//        robot.lift.rest();
+            timeout(0.5);
+        }
 
         // PARK
-        drive.setTargetPoint(-60, -35);
+        drive.setTargetHeading(Math.toRadians(-180));
+        drive.setTargetPoint(16, -63);
         runDrive();
-        timeout(1);
+        drive.setTargetPoint(45, -63);
+        runDrive();
     }
 
     public void runDrive() {

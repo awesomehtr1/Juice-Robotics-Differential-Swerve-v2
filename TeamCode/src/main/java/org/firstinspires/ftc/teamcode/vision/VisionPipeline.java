@@ -12,18 +12,18 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class VisionPipeline extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
-    
+
     public static Rect LEFTBOX = new Rect(
-            new Point(5, 30),
-            new Point(90, 100)
+            new Point(40, 0),
+            new Point(140, 80)
     );
     public static Rect CENTERBOX = new Rect(
-            new Point(115, 30),
-            new Point(195, 100)
+            new Point(150, 0),
+            new Point(250, 80)
     );
     public static Rect RIGHTBOX = new Rect(
-            new Point(220, 30),
-            new Point(305, 100)
+            new Point(260, 0),
+            new Point(320, 80)
     );
 
     public Scalar lowHSV = new Scalar(150, 50, 50);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.red;
+package org.firstinspires.ftc.teamcode.auto.blue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.auto.autocontrol.RunToPosition;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.VisionPipeline;
 
-@Autonomous(name = "Red Duck Side", group = "Auto")
-public class DuckSideRed extends LinearOpMode {
+@Autonomous(name = "Blue Duck Side", group = "Auto")
+public class DuckSideBlue extends LinearOpMode {
     Robot robot;
     RunToPosition drive;
     Vision vision;
@@ -34,8 +34,8 @@ public class DuckSideRed extends LinearOpMode {
                 hardwareMap,
                 DriveConstants.drivePIDConstants,
                 DriveConstants.rotationPIDconstants);
-        drive.setStartPose(-36, -64, Math.toRadians(-90));
-        drive.setTargetHeading(Math.toRadians(-90));
+        drive.setStartPose(-36, 64, Math.toRadians(90));
+        drive.setTargetHeading(Math.toRadians(90));
 
         vision = new Vision(hardwareMap, telemetry);
         vision.setPipeline();
@@ -65,7 +65,7 @@ public class DuckSideRed extends LinearOpMode {
         robot.update();
 
         // SCORE PRELOAD
-        drive.setTargetPoint(-32, -23);
+        drive.setTargetPoint(-32, 23);
         runDrive();
         robot.arm.mid();
         timeout(0.5);
@@ -75,7 +75,7 @@ public class DuckSideRed extends LinearOpMode {
         timeout(0.75);
 
         // RESET
-        drive.setTargetPoint(-38, -23);
+        drive.setTargetPoint(-38, 23);
         runDrive();
         robot.claw.timedRetract();
         robot.arm.intake();
@@ -83,9 +83,9 @@ public class DuckSideRed extends LinearOpMode {
         timeout(0.5);
 
         // SPIN DUCK
-        drive.setTargetHeading(Math.toRadians(-55));
+        drive.setTargetHeading(Math.toRadians(55));
         runDrive();
-        drive.setTargetPoint(-55, -55);
+        drive.setTargetPoint(-55, 55);
         runDrive();
         drive.forwardByTime(0.15, 4);
         robot.spinner.on();
@@ -94,25 +94,25 @@ public class DuckSideRed extends LinearOpMode {
 
         // INTAKE DUCK
         robot.intake.on();
-        drive.setTargetPoint(-52, -52);
+        drive.setTargetPoint(-52, 52);
         runDrive();
-        drive.setTargetHeading(Math.toRadians(-90));
+        drive.setTargetHeading(Math.toRadians(90));
         runDrive();
-        drive.setTargetPoint(-52, -60);
+        drive.setTargetPoint(-52, 60);
         runDrive();
-        drive.strafeByTime(-0.25, 2);
+        drive.strafeByTime(0.25, 2);
         runDrive();
         robot.intake.off();
 
         // SCORE DUCK
-        drive.setTargetPoint(-32, -23);
+        drive.setTargetPoint(-32, 23);
         runDrive();
         drive.setTargetHeading(Math.toRadians(0));
         runDrive();
         timeout(3);
 
         // PARK
-        drive.setTargetPoint(-60, -35);
+        drive.setTargetPoint(-60, 35);
         runDrive();
         timeout(1);
     }
