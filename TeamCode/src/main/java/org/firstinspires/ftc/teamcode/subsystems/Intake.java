@@ -12,12 +12,12 @@ public class Intake implements Subsystem{
     double power;
 
     // stores current state of intake
-    enum State {
+    public enum State {
         OFF,
         ON,
         REVERSE
     }
-    Intake.State state, prevState;
+    public Intake.State state, prevState;
 
     public Intake(Robot robot){
         this.robot = robot;
@@ -26,7 +26,7 @@ public class Intake implements Subsystem{
         servoL1 = robot.hardwareMap.get(CRServo.class, "intakeL1");
         servoL2 = robot.hardwareMap.get(CRServo.class, "intakeL2");
         state = State.OFF;
-        prevState = state;
+        prevState = State.OFF;
         power = 1;
     }
 
@@ -56,7 +56,8 @@ public class Intake implements Subsystem{
     }
 
     public void restoreState() {
-        state = prevState;
+        if(state == State.REVERSE)
+            state = prevState;
     }
 
     public void changePower(double power) { this.power = power;}

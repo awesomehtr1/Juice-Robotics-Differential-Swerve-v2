@@ -15,10 +15,12 @@ public class TeleopRed extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
         SwerveDrive drive = new SwerveDrive(hardwareMap);
-        drive.setFieldCentric(true);
-        drive.fieldCentricRed();
+        drive.setFieldCentric(false);
         drive.setBrake();
-        drive.setSlowmode(false);   
+        drive.setSlowmode(false);
+        drive.
+
+        robot.spinner.setPower(-1);
 
         SanfordGyro gyro = new SanfordGyro(hardwareMap);
 
@@ -29,15 +31,15 @@ public class TeleopRed extends LinearOpMode {
                 .addAction(()-> robot.intake.on())
                 .addAction(()-> robot.intake.off())
                 .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder() // reverse intake
+                .typeHold(()-> gamepad1.right_trigger > 0.1)
+                .addAction(()-> robot.intake.queryReverse())
+                .addAction(()-> robot.intake.restoreState())
+                .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // slowmode
                 .typeToggle(()-> gamepad1.left_trigger > 0.1)
                 .addAction(()-> drive.setSlowmode(true))
                 .addAction(()-> drive.setSlowmode(false))
-                .build());
-        robot.createTeleOpManager(new TeleOpManagerBuilder()
-                .typeToggle(()-> gamepad1.dpad_up)
-                .addAction(()-> drive.setFieldCentric(false))
-                .addAction(()-> drive.setFieldCentric(true))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring high
                 .typeTrigger(()-> gamepad1.left_bumper)

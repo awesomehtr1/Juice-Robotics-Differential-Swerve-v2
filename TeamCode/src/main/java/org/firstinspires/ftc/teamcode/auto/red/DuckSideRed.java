@@ -30,6 +30,7 @@ public class DuckSideRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, gamepad1, gamepad2);
+        robot.spinner.setPower(-1);
         drive = new RunToPosition(
                 hardwareMap,
                 DriveConstants.drivePIDConstants,
@@ -115,6 +116,10 @@ public class DuckSideRed extends LinearOpMode {
         robot.intake.setPower(0.7);
         robot.intake.on();
         drive.setTargetPoint(-52, -52);
+        runDrive();
+        drive.setTargetPoint(-52, -58);
+        runDrive();
+        drive.setTargetHeading(-20);
         runDrive();
         drive.setTargetHeading(Math.toRadians(-90));
         runDrive();

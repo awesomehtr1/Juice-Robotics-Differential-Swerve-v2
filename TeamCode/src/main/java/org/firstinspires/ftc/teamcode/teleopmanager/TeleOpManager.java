@@ -43,7 +43,7 @@ public class TeleOpManager {
     // hold constructor (1 boolean hold, 2 actions)
     public TeleOpManager(BooleanSupplier trigger, RobotAction action1, RobotAction action2, boolean hold) {
         this.trigger = trigger;
-        this.action = action;
+        this.action = action1;
         this.action2 = action2;
         mode = MODE.HOLD;
     }

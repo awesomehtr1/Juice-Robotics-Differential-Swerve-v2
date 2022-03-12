@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.helperfunctions.SanfordGyro;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.swerve.SwerveDrive;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManager;
 import org.firstinspires.ftc.teamcode.teleopmanager.TeleOpManagerBuilder;
@@ -15,11 +16,9 @@ public class TeleopBlue extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, gamepad1, gamepad2); // creates new robot
 
         SwerveDrive drive = new SwerveDrive(hardwareMap);
-        drive.setFieldCentric(true);
-        drive.fieldCentricBlue();
+        drive.setFieldCentric(false);
         drive.setBrake();
         drive.setSlowmode(false);
-        robot.spinner.setPower(-1);
 
         SanfordGyro gyro = new SanfordGyro(hardwareMap);
 
@@ -30,15 +29,15 @@ public class TeleopBlue extends LinearOpMode {
                 .addAction(()-> robot.intake.on())
                 .addAction(()-> robot.intake.off())
                 .build());
+        robot.createTeleOpManager(new TeleOpManagerBuilder() // reverse intake
+                .typeHold(()-> gamepad1.right_trigger > 0.1)
+                .addAction(()-> robot.intake.queryReverse())
+                .addAction(()-> robot.intake.restoreState())
+                .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // slowmode
                 .typeToggle(()-> gamepad1.left_trigger > 0.1)
                 .addAction(()-> drive.setSlowmode(true))
                 .addAction(()-> drive.setSlowmode(false))
-                .build());
-        robot.createTeleOpManager(new TeleOpManagerBuilder()
-                .typeToggle(()-> gamepad1.dpad_up)
-                .addAction(()-> drive.setFieldCentric(false))
-                .addAction(()-> drive.setFieldCentric(true))
                 .build());
         robot.createTeleOpManager(new TeleOpManagerBuilder() // scoring high
                 .typeTrigger(()-> gamepad1.left_bumper)
